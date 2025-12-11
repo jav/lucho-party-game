@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucho Party Game - Flow & UX Frames</title>
+    <title>Studio Lucho - Flow & UX Frames</title>
     <style>
         * {
             margin: 0;
@@ -356,94 +356,83 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎭 Lucho Party Game</h1>
+        <h1>🎭 Studio Lucho</h1>
         <p class="subtitle">Complete Flow with UX Frames</p>
         
         <div class="flow-container">
             
-            <!-- Step 1: Landing -->
+            <!-- Step 1: Splash Screen -->
             <div class="flow-step">
                 <div class="step-info">
                     <span class="step-number">1</span>
-                    <h2 class="step-title">App Launch</h2>
+                    <h2 class="step-title">Welcome Screen</h2>
                     <p class="step-description">
-                        Players open the app and choose to either create a new game session or join an existing one via QR code.
+                        Initial splash screen shown when the app first launches. Displays the Studio Lucho branding and tagline. Tap anywhere to continue.
                     </p>
                     <span class="step-roles">All Players</span>
                 </div>
                 <div class="ux-frame">
                     <div class="phone-notch"></div>
                     <div class="screen-content">
-                        <div class="screen-header">Lucho Party Game</div>
-                        <div style="text-align: center; margin: 40px 0;">
-                            <div style="font-size: 4em;">🎭</div>
+                        <div style="text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                            <div class="screen-header" style="font-size: 3em; margin-bottom: 20px;">Studio Lucho</div>
+                            <div style="font-size: 5em; margin: 30px 0;">🎭</div>
+                            <div style="color: #C9A875; font-size: 1.1em; padding: 0 30px;">
+                                Theatrical improvisation meets competitive league play
+                            </div>
                         </div>
-                        <button class="btn btn-primary">CREATE SESSION</button>
-                        <button class="btn btn-secondary">JOIN SESSION</button>
                     </div>
                 </div>
             </div>
 
             <div class="arrow-down">↓</div>
 
-            <!-- Step 2: QR Code Display -->
+            <!-- Step 2: Game Room + Name Entry -->
             <div class="flow-step">
                 <div class="step-info">
                     <span class="step-number">2</span>
-                    <h2 class="step-title">Session Created</h2>
+                    <h2 class="step-title">Join Game</h2>
                     <p class="step-description">
-                        The host creates a session and receives a QR code. Other players can scan this code to join instantly. The QR code can be shared by any participant at any time.
-                    </p>
-                    <span class="step-roles">Session Creator</span>
-                </div>
-                <div class="ux-frame">
-                    <div class="phone-notch"></div>
-                    <div class="screen-content">
-                        <div class="screen-header">Session Created!</div>
-                        <div class="qr-code">
-                            <div style="text-align: center;">
-                                <div style="font-size: 3em;">▦</div>
-                                <div>QR CODE</div>
-                            </div>
-                        </div>
-                        <div style="text-align: center; margin: 20px 0;">
-                            Show this to other players to let them join!
-                        </div>
-                        <div class="session-id">Session ID: ABC-123</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="arrow-down">↓</div>
-
-            <!-- Step 3: Enter Name -->
-            <div class="flow-step">
-                <div class="step-info">
-                    <span class="step-number">3</span>
-                    <h2 class="step-title">Choose Screen Name</h2>
-                    <p class="step-description">
-                        After creating or joining a session, each player chooses their screen name that will be displayed throughout the game.
+                        Everyone needs to be in the same game! Enter your name to join. Show your QR code to invite others, or scan someone else's code to switch games.
                     </p>
                     <span class="step-roles">All Players</span>
                 </div>
                 <div class="ux-frame">
                     <div class="phone-notch"></div>
                     <div class="screen-content">
-                        <div class="screen-header">Choose Your Name</div>
-                        <div style="margin: 60px 0;">
-                            <input type="text" class="input-field" placeholder="Enter screen name..." value="">
+                        <div style="text-align: center; padding: 20px;">
+                            <div style="color: #C9A875; font-size: 0.95em; margin-bottom: 20px; line-height: 1.4;">
+                                Everyone needs to be in the same game!
+                            </div>
+                            
+                            <div style="margin: 20px 0;">
+                                <div style="color: #8B7355; font-size: 0.85em; margin-bottom: 8px;">Your Game:</div>
+                                <div style="font-size: 1.8em; font-weight: bold; color: #D4A574;">Dramatic Badger</div>
+                            </div>
+                            
+                            <div class="qr-code" style="width: 140px; height: 140px; margin: 20px auto;">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 2.5em;">▦</div>
+                                    <div style="font-size: 0.8em; margin-top: 5px;">Scan to join</div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin: 25px 0;">
+                                <input type="text" class="input-field" placeholder="Enter your name..." value="">
+                            </div>
+                            
+                            <button class="btn btn-secondary">SCAN QR CODE</button>
                         </div>
-                        <button class="btn btn-primary">CONTINUE</button>
                     </div>
                 </div>
             </div>
 
             <div class="arrow-down">↓</div>
 
-            <!-- Step 4: Lobby -->
+            <!-- Step 3: Lobby -->
             <div class="flow-step">
                 <div class="step-info">
-                    <span class="step-number">4</span>
+                    <span class="step-number">3</span>
                     <h2 class="step-title">Session Lobby</h2>
                     <p class="step-description">
                         All players wait in the lobby. The host can see all connected players and start the game when ready. The QR code remains visible for new players to join.
@@ -471,10 +460,10 @@
 
             <div class="arrow-down">↓</div>
 
-            <!-- Step 5: Actor Selection -->
+            <!-- Step 4: Actor Selection -->
             <div class="flow-step">
                 <div class="step-info">
-                    <span class="step-number">5</span>
+                    <span class="step-number">4</span>
                     <h2 class="step-title">Actor Chooses Scene</h2>
                     <p class="step-description">
                         The game randomly selects an actor. The actor then chooses a scene from a list of famous movie/theater scenes to perform.
@@ -509,10 +498,10 @@
 
             <div class="arrow-down">↓</div>
 
-            <!-- Step 6: Director Selection -->
+            <!-- Step 5: Director Selection -->
             <div class="flow-step">
                 <div class="step-info">
-                    <span class="step-number">6</span>
+                    <span class="step-number">5</span>
                     <h2 class="step-title">Director Chooses Style</h2>
                     <p class="step-description">
                         After the actor picks their scene, a director is randomly chosen from the remaining players. The director selects which famous director's style to use.
@@ -546,10 +535,10 @@
 
             <div class="arrow-down">↓</div>
 
-            <!-- Step 7: Pre-Round (Viewers) -->
+            <!-- Step 6: Pre-Round (Viewers) -->
             <div class="flow-step">
                 <div class="step-info">
-                    <span class="step-number">7</span>
+                    <span class="step-number">6</span>
                     <h2 class="step-title">Round Ready - Waiting</h2>
                     <p class="step-description">
                         All players see who the actor and director are, along with the chosen scene and directing style. Viewers wait for the actor and director to press START.
@@ -580,10 +569,10 @@
 
             <div class="arrow-down">↓</div>
 
-            <!-- Step 8: Pre-Round (Actor/Director) -->
+            <!-- Step 7: Pre-Round (Actor/Director) -->
             <div class="flow-step">
                 <div class="step-info">
-                    <span class="step-number">8</span>
+                    <span class="step-number">9</span>
                     <h2 class="step-title">Ready to Start</h2>
                     <p class="step-description">
                         The actor and director see the same information as viewers, but they have a START button. Both must press it to begin the round.
