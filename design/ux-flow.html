@@ -13,21 +13,22 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #0d1117;
+            background: linear-gradient(to bottom, #1a0f0a 0%, #2d1810 50%, #1a0f0a 100%);
             padding: 20px;
             overflow-x: hidden;
         }
         
         h1 {
             text-align: center;
-            color: #e6edf3;
+            color: #D4A574;
             margin-bottom: 10px;
             font-size: 2em;
+            font-family: Georgia, 'Times New Roman', serif;
         }
         
         .subtitle {
             text-align: center;
-            color: #8b949e;
+            color: #C9A875;
             margin-bottom: 30px;
             font-size: 1.1em;
         }
@@ -48,10 +49,10 @@
             align-items: center;
             gap: 30px;
             padding: 20px;
-            background: #161b22;
+            background: rgba(45, 24, 16, 0.6);
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            border: 1px solid #30363d;
+            border: 1px solid rgba(212, 165, 116, 0.2);
         }
         
         .flow-step:nth-child(even) {
@@ -67,8 +68,8 @@
             display: inline-block;
             width: 35px;
             height: 35px;
-            background: #58a6ff;
-            color: #0d1117;
+            background: linear-gradient(135deg, #D4A574 0%, #C9A875 100%);
+            color: #1a0f0a;
             border-radius: 50%;
             text-align: center;
             line-height: 35px;
@@ -78,13 +79,14 @@
         
         .step-title {
             font-size: 1.4em;
-            color: #e6edf3;
+            color: #D4A574;
             margin-bottom: 8px;
             font-weight: 600;
+            font-family: Georgia, 'Times New Roman', serif;
         }
         
         .step-description {
-            color: #8b949e;
+            color: #C9A875;
             line-height: 1.6;
             margin-bottom: 10px;
         }
@@ -92,21 +94,22 @@
         .step-roles {
             display: inline-block;
             padding: 4px 12px;
-            background: #1f6feb;
-            color: #e6edf3;
+            background: rgba(212, 165, 116, 0.2);
+            color: #D4A574;
             border-radius: 12px;
             font-size: 0.85em;
             font-weight: 500;
+            border: 1px solid rgba(212, 165, 116, 0.3);
         }
         
         .ux-frame {
             flex: 0 0 320px;
             height: 580px;
-            background: #0d1117;
-            border: 3px solid #58a6ff;
+            background: #1a0f0a;
+            border: 3px solid #8B7355;
             border-radius: 30px;
             padding: 15px;
-            box-shadow: 0 10px 30px rgba(88,166,255,0.3);
+            box-shadow: 0 10px 30px rgba(139, 115, 85, 0.3);
             position: relative;
             overflow: hidden;
         }
@@ -118,22 +121,22 @@
             transform: translateX(-50%);
             width: 120px;
             height: 25px;
-            background: #0d1117;
+            background: #1a0f0a;
             border-radius: 0 0 15px 15px;
         }
         
         .screen-content {
-            background: linear-gradient(135deg, #1f6feb 0%, #8957e5 100%);
+            background: linear-gradient(to bottom, #3d2817 0%, #2d1810 100%);
             height: 100%;
             border-radius: 20px;
             padding: 35px 20px 20px;
-            color: #e6edf3;
+            color: #F5E6D3;
             overflow-y: auto;
         }
         
         .screen-content.light {
-            background: #161b22;
-            color: #e6edf3;
+            background: linear-gradient(to bottom, #3d2817 0%, #2d1810 100%);
+            color: #F5E6D3;
         }
         
         .screen-header {
@@ -141,8 +144,9 @@
             font-weight: 700;
             text-align: center;
             margin-bottom: 25px;
-            text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-family: Georgia, 'Times New Roman', serif;
+            color: #D4A574;
         }
         
         .btn {
@@ -160,9 +164,10 @@
         }
         
         .btn-primary {
-            background: #238636;
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(35,134,54,0.4);
+            background: linear-gradient(135deg, #D4A574 0%, #C9A875 100%);
+            color: #1a0f0a;
+            box-shadow: 0 4px 15px rgba(212,165,116,0.4);
+            font-weight: 600;
         }
         
         .btn-primary:hover {
@@ -171,9 +176,9 @@
         }
         
         .btn-secondary {
-            background: rgba(88,166,255,0.1);
-            color: #58a6ff;
-            border: 2px solid #58a6ff;
+            background: rgba(212,165,116,0.1);
+            color: #D4A574;
+            border: 2px solid #8B7355;
         }
         
         .btn-success {
@@ -195,26 +200,26 @@
         .input-field {
             width: 100%;
             padding: 15px;
-            border: 1px solid #30363d;
+            border: 1px solid rgba(139, 115, 85, 0.3);
             border-radius: 12px;
             font-size: 1em;
             margin: 15px 0;
-            background: #0d1117;
-            color: #e6edf3;
+            background: rgba(26, 15, 10, 0.5);
+            color: #F5E6D3;
         }
         
         .qr-code {
             width: 150px;
             height: 150px;
-            background: #0d1117;
+            background: #1a0f0a;
             margin: 20px auto;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.9em;
-            color: #8b949e;
-            border: 2px dashed #30363d;
+            color: #C9A875;
+            border: 2px dashed rgba(139, 115, 85, 0.3);
         }
         
         .player-list {
@@ -326,7 +331,7 @@
         .arrow-down {
             text-align: center;
             font-size: 2em;
-            color: #58a6ff;
+            color: #D4A574;
             margin: 10px 0;
         }
         
