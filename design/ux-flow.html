@@ -329,6 +329,24 @@
             color: #58a6ff;
             margin: 10px 0;
         }
+        
+        /* Print styles to preserve dark mode */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
+            body {
+                background: #0d1117 !important;
+            }
+            
+            .flow-step {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+        }
     </style>
 </head>
 <body>
