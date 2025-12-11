@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucho Party Game - Flow Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        h1 {
+            text-align: center;
+            color: #569cd6;
+            margin-bottom: 30px;
+        }
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 0 auto;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Lucho Party Game - Interaction Flow</h1>
+        <div class="mermaid">
+flowchart TD
+    Start([App Launch]) --> CreateOrJoin{New Session<br/>or Join?}
+    
+    CreateOrJoin -->|Create| CreateSession[Create Session<br/>Generate QR Code]
+    CreateOrJoin -->|Join| ScanQR[Scan QR Code]
+    
+    CreateSession --> EnterName[Enter Player Name]
+    ScanQR --> EnterName
+    
+    EnterName --> Lobby[Session Lobby<br/>Show QR for others to join<br/>Wait for players]
+    
+    Lobby --> StartGame{Host starts<br/>game?}
+    StartGame -->|No| Lobby
+    StartGame -->|Yes| SelectActor[Random: Select Actor]
+    
+    SelectActor --> ActorChoosesScene[Actor Chooses Scene<br/>from list]
+    
+    ActorChoosesScene --> SelectDirector[Random: Select Director]
+    
+    SelectDirector --> DirectorChoosesStyle[Director Chooses<br/>Director Style]
+    
+    DirectorChoosesStyle --> PreRoundScreen[All Players See:<br/>- Actor name<br/>- Scene chosen<br/>- Director name<br/>- Style chosen]
+    
+    PreRoundScreen --> ActorDirectorReady{Actor & Director<br/>press START?}
+    
+    ActorDirectorReady -->|Waiting| PreRoundScreen
+    ActorDirectorReady -->|Both Ready| RoundActive[Round Active<br/>5 Minute Timer<br/>Actor performs<br/>Director directs]
+    
+    RoundActive --> RoundEnd[Round Ends!<br/>Big Screen Notification]
+    
+    RoundEnd --> RatingScreen{Player Role?}
+    
+    RatingScreen -->|Viewer| RatePerformance[Rate Performance<br/>1-5 Stars]
+    RatingScreen -->|Actor/Director| WaitForRatings[Wait for Ratings]
+    
+    RatePerformance --> ShowScores[Show Scores<br/>Individual scores<br/>Cumulative totals]
+    WaitForRatings --> ShowScores
+    
+    ShowScores --> NextRound[Continue to<br/>Next Round?<br/>Yes/No]
+    
+    NextRound -->|Timeout or All Voted| CheckVotes{Enough<br/>Yes votes?}
+    
+    CheckVotes -->|Yes| SelectActor
+    CheckVotes -->|No| GameOver[Game Over<br/>Final Scores]
+    
+    GameOver --> End([Exit or New Session])
+        </div>
+    </div>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>

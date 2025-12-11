@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucho Party Game - Flow & UX Frames</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0d1117;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #e6edf3;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #8b949e;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 20px;
+            background: #161b22;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            border: 1px solid #30363d;
+        }
+        
+        .flow-step:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+        
+        .step-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: #58a6ff;
+            color: #0d1117;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .step-title {
+            font-size: 1.4em;
+            color: #e6edf3;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .step-description {
+            color: #8b949e;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .step-roles {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #1f6feb;
+            color: #e6edf3;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .ux-frame {
+            flex: 0 0 320px;
+            height: 580px;
+            background: #0d1117;
+            border: 3px solid #58a6ff;
+            border-radius: 30px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(88,166,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: #0d1117;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .screen-content {
+            background: linear-gradient(135deg, #1f6feb 0%, #8957e5 100%);
+            height: 100%;
+            border-radius: 20px;
+            padding: 35px 20px 20px;
+            color: #e6edf3;
+            overflow-y: auto;
+        }
+        
+        .screen-content.light {
+            background: #161b22;
+            color: #e6edf3;
+        }
+        
+        .screen-header {
+            font-size: 1.3em;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #238636;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(35,134,54,0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(88,166,255,0.1);
+            color: #58a6ff;
+            border: 2px solid #58a6ff;
+        }
+        
+        .btn-success {
+            background: #4caf50;
+            color: white;
+            font-size: 1.2em;
+            padding: 18px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            font-size: 1em;
+            margin: 15px 0;
+            background: #0d1117;
+            color: #e6edf3;
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            background: #0d1117;
+            margin: 20px auto;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            color: #8b949e;
+            border: 2px dashed #30363d;
+        }
+        
+        .player-list {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .player-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .player-item::before {
+            content: '👤';
+            font-size: 1.2em;
+        }
+        
+        .radio-option {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .radio-option:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: white;
+        }
+        
+        .info-card {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+            border-left: 4px solid white;
+        }
+        
+        .info-card strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .timer {
+            font-size: 3em;
+            font-weight: 700;
+            text-align: center;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .stars {
+            text-align: center;
+            font-size: 2.5em;
+            margin: 20px 0;
+            letter-spacing: 10px;
+        }
+        
+        .star {
+            cursor: pointer;
+            opacity: 0.3;
+            transition: all 0.2s;
+        }
+        
+        .star:hover, .star.active {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        
+        .score-list {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        
+        .medal {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        
+        .session-id {
+            text-align: center;
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 15px;
+        }
+        
+        .arrow-down {
+            text-align: center;
+            font-size: 2em;
+            color: #58a6ff;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Lucho Party Game</h1>
+        <p class="subtitle">Complete Flow with UX Frames</p>
+        
+        <div class="flow-container">
+            
+            <!-- Step 1: Landing -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">1</span>
+                    <h2 class="step-title">App Launch</h2>
+                    <p class="step-description">
+                        Players open the app and choose to either create a new game session or join an existing one via QR code.
+                    </p>
+                    <span class="step-roles">All Players</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content">
+                        <div class="screen-header">Lucho Party Game</div>
+                        <div style="text-align: center; margin: 40px 0;">
+                            <div style="font-size: 4em;">🎭</div>
+                        </div>
+                        <button class="btn btn-primary">CREATE SESSION</button>
+                        <button class="btn btn-secondary">JOIN SESSION</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 2: QR Code Display -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">2</span>
+                    <h2 class="step-title">Session Created</h2>
+                    <p class="step-description">
+                        The host creates a session and receives a QR code. Other players can scan this code to join instantly. The QR code can be shared by any participant at any time.
+                    </p>
+                    <span class="step-roles">Session Creator</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content">
+                        <div class="screen-header">Session Created!</div>
+                        <div class="qr-code">
+                            <div style="text-align: center;">
+                                <div style="font-size: 3em;">▦</div>
+                                <div>QR CODE</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin: 20px 0;">
+                            Show this to other players to let them join!
+                        </div>
+                        <div class="session-id">Session ID: ABC-123</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 3: Enter Name -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">3</span>
+                    <h2 class="step-title">Choose Screen Name</h2>
+                    <p class="step-description">
+                        After creating or joining a session, each player chooses their screen name that will be displayed throughout the game.
+                    </p>
+                    <span class="step-roles">All Players</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content">
+                        <div class="screen-header">Choose Your Name</div>
+                        <div style="margin: 60px 0;">
+                            <input type="text" class="input-field" placeholder="Enter screen name..." value="">
+                        </div>
+                        <button class="btn btn-primary">CONTINUE</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 4: Lobby -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">4</span>
+                    <h2 class="step-title">Session Lobby</h2>
+                    <p class="step-description">
+                        All players wait in the lobby. The host can see all connected players and start the game when ready. The QR code remains visible for new players to join.
+                    </p>
+                    <span class="step-roles">All Players</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: #161b22;">
+                        <div class="screen-header" style="color: #58a6ff;">Session Lobby</div>
+                        <div class="player-list" style="background: rgba(88,166,255,0.1);">
+                            <div style="margin-bottom: 10px; font-weight: 600; color: #58a6ff;">Players in session:</div>
+                            <div class="player-item" style="background: #0d1117;">Alice</div>
+                            <div class="player-item" style="background: #0d1117;">Bob</div>
+                            <div class="player-item" style="background: #0d1117;">Charlie</div>
+                            <div class="player-item" style="background: #0d1117; border: 2px solid #238636;">You (Dana)</div>
+                        </div>
+                        <div class="qr-code" style="width: 100px; height: 100px; margin: 15px auto;">
+                            <div style="font-size: 2em;">▦</div>
+                        </div>
+                        <button class="btn btn-primary">START GAME</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 5: Actor Selection -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">5</span>
+                    <h2 class="step-title">Actor Chooses Scene</h2>
+                    <p class="step-description">
+                        The game randomly selects an actor. The actor then chooses a scene from a list of famous movie/theater scenes to perform.
+                    </p>
+                    <span class="step-roles">Actor Only</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: linear-gradient(135deg, #8957e5 0%, #d42a6a 100%);">
+                        <div class="screen-header">You Are The Actor! 🎭</div>
+                        <div style="margin-bottom: 15px; text-align: center;">Choose your scene:</div>
+                        <div class="radio-option">
+                            <div>📜 Romeo & Juliet</div>
+                            <div style="font-size: 0.85em; opacity: 0.8;">Balcony Scene</div>
+                        </div>
+                        <div class="radio-option" style="border-color: white; background: rgba(255,255,255,0.3);">
+                            <div>💀 Hamlet</div>
+                            <div style="font-size: 0.85em; opacity: 0.8;">To be or not to be</div>
+                        </div>
+                        <div class="radio-option">
+                            <div>⚔️ Macbeth</div>
+                            <div style="font-size: 0.85em; opacity: 0.8;">Dagger speech</div>
+                        </div>
+                        <div class="radio-option">
+                            <div>🌟 Star Wars</div>
+                            <div style="font-size: 0.85em; opacity: 0.8;">I am your father</div>
+                        </div>
+                        <button class="btn btn-primary">CONFIRM</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 6: Director Selection -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">6</span>
+                    <h2 class="step-title">Director Chooses Style</h2>
+                    <p class="step-description">
+                        After the actor picks their scene, a director is randomly chosen from the remaining players. The director selects which famous director's style to use.
+                    </p>
+                    <span class="step-roles">Director Only</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: linear-gradient(135deg, #1f6feb 0%, #00d4ff 100%);">
+                        <div class="screen-header">You Are The Director! 🎬</div>
+                        <div style="margin-bottom: 15px; text-align: center;">Direct the scene as:</div>
+                        <div class="radio-option">
+                            <div>🔪 Quentin Tarantino</div>
+                        </div>
+                        <div class="radio-option" style="border-color: white; background: rgba(255,255,255,0.3);">
+                            <div>🎨 Wes Anderson</div>
+                        </div>
+                        <div class="radio-option">
+                            <div>🌀 Christopher Nolan</div>
+                        </div>
+                        <div class="radio-option">
+                            <div>🦇 Tim Burton</div>
+                        </div>
+                        <div class="radio-option">
+                            <div>🐦 Alfred Hitchcock</div>
+                        </div>
+                        <button class="btn btn-primary">CONFIRM</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 7: Pre-Round (Viewers) -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">7</span>
+                    <h2 class="step-title">Round Ready - Waiting</h2>
+                    <p class="step-description">
+                        All players see who the actor and director are, along with the chosen scene and directing style. Viewers wait for the actor and director to press START.
+                    </p>
+                    <span class="step-roles">Viewers</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content light" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333;">
+                        <div class="screen-header" style="color: #d35400;">Round Ready!</div>
+                        <div class="info-card" style="background: rgba(255,255,255,0.7); border-left-color: #e74c3c;">
+                            <strong>🎭 ACTOR</strong>
+                            <div style="font-size: 1.1em; font-weight: 600;">Alice</div>
+                            <div style="margin-top: 5px; opacity: 0.8;">Scene: Romeo & Juliet</div>
+                            <div style="font-size: 0.9em; opacity: 0.7;">Balcony Scene</div>
+                        </div>
+                        <div class="info-card" style="background: rgba(255,255,255,0.7); border-left-color: #3498db;">
+                            <strong>🎬 DIRECTOR</strong>
+                            <div style="font-size: 1.1em; font-weight: 600;">Bob</div>
+                            <div style="margin-top: 5px; opacity: 0.9;">Style: Wes Anderson</div>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; font-style: italic; opacity: 0.8;">
+                            Waiting for Actor & Director to start...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 8: Pre-Round (Actor/Director) -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">8</span>
+                    <h2 class="step-title">Ready to Start</h2>
+                    <p class="step-description">
+                        The actor and director see the same information as viewers, but they have a START button. Both must press it to begin the round.
+                    </p>
+                    <span class="step-roles">Actor & Director</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: linear-gradient(135deg, #8b5a00 0%, #d45a3c 100%);">
+                        <div class="screen-header" style="color: #ffa94d;">Round Ready!</div>
+                        <div class="info-card" style="background: rgba(0,0,0,0.3); border-left-color: #ff6b6b;">
+                            <strong>🎭 ACTOR</strong>
+                            <div style="font-size: 1.1em; font-weight: 600;">Alice (YOU)</div>
+                            <div style="margin-top: 5px; opacity: 0.9;">Scene: Romeo & Juliet</div>
+                            <div style="font-size: 0.9em; opacity: 0.8;">Balcony Scene</div>
+                        </div>
+                        <div class="info-card" style="background: rgba(0,0,0,0.3); border-left-color: #58a6ff;">
+                            <strong>🎬 DIRECTOR</strong>
+                            <div style="font-size: 1.1em; font-weight: 600;">Bob</div>
+                            <div style="margin-top: 5px; opacity: 0.9;">Style: Wes Anderson</div>
+                        </div>
+                        <button class="btn btn-success">▶ START ROUND</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 9A: Active Round - Viewers -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">9</span>
+                    <h2 class="step-title">Performance in Progress - Viewers</h2>
+                    <p class="step-description">
+                        The round begins! A 5-minute timer counts down. Viewers watch silently while the actor performs and the director directs.
+                    </p>
+                    <span class="step-roles">Viewers</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: linear-gradient(135deg, #d42a6a 0%, #ffa94d 100%);">
+                        <div class="screen-header">🎬 Round In Progress</div>
+                        <div class="timer">3:47</div>
+                        <div class="info-card" style="background: rgba(0,0,0,0.2); border-left-color: #fff;">
+                            <strong>Actor:</strong> Alice
+                        </div>
+                        <div class="info-card" style="background: rgba(0,0,0,0.2); border-left-color: #fff;">
+                            <strong>Director:</strong> Bob (Wes Anderson)
+                        </div>
+                        <div class="info-card" style="background: rgba(0,0,0,0.2); border-left-color: #fff;">
+                            <strong>Scene:</strong> Romeo & Juliet
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; font-size: 1.5em;">
+                            🎭
+                        </div>
+                        <div style="text-align: center; font-style: italic; opacity: 0.9; margin-top: 10px;">
+                            Performance happening...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 9B: Active Round - Actor -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">9</span>
+                    <h2 class="step-title">Performance in Progress - Actor</h2>
+                    <p class="step-description">
+                        The actor sees the full scene monologue with cues to help them perform. They recite the scene while following the director's guidance.
+                    </p>
+                    <span class="step-roles">Actor Only</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: #161b22;">
+                        <div class="screen-header" style="color: #ff6b6b; font-size: 1em;">🎭 ACTOR - Romeo & Juliet</div>
+                        <div class="timer" style="font-size: 2em; color: #ff6b6b; margin: 15px 0;">3:47</div>
+                        <div style="background: #0d1117; padding: 15px; border-radius: 12px; border-left: 4px solid #ff6b6b; max-height: 350px; overflow-y: auto; font-size: 0.9em; line-height: 1.5;">
+                            <div style="font-weight: 700; margin-bottom: 10px; color: #ff6b6b;">BALCONY SCENE</div>
+                            <div style="margin-bottom: 15px;">
+                                <em style="color: #8b949e;">[Romeo stands below Juliet's balcony, gazing up]</em>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong>ROMEO:</strong> But soft, what light through yonder window breaks? It is the east, and Juliet is the sun.
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <em style="color: #8b949e;">[Juliet appears at the window]</em>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                Arise, fair sun, and kill the envious moon, who is already sick and pale with grief...
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <em style="color: #8b949e;">[Pause, look up lovingly]</em>
+                            </div>
+                            <div>
+                                O, that I were a glove upon that hand, that I might touch that cheek!
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">
+                            Director: Bob (Wes Anderson)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 9C: Active Round - Director -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">9</span>
+                    <h2 class="step-title">Performance in Progress - Director</h2>
+                    <p class="step-description">
+                        The director sees guidance on how their chosen director would approach this scene. They use these notes to direct the actor's performance.
+                    </p>
+                    <span class="step-roles">Director Only</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: #161b22;">
+                        <div class="screen-header" style="color: #58a6ff; font-size: 1em;">🎬 DIRECTOR - Wes Anderson</div>
+                        <div class="timer" style="font-size: 2em; color: #58a6ff; margin: 15px 0;">3:47</div>
+                        <div style="background: #0d1117; padding: 15px; border-radius: 12px; border-left: 4px solid #58a6ff; max-height: 350px; overflow-y: auto; font-size: 0.9em; line-height: 1.6;">
+                            <div style="font-weight: 700; margin-bottom: 10px; color: #58a6ff;">DIRECTING AS WES ANDERSON</div>
+                            <div style="margin-bottom: 12px;">
+                                <strong>🎨 Visual Style:</strong> Everything should be perfectly symmetrical. Have the actor stand centered, facing directly forward when possible.
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong>🎭 Performance:</strong> Keep emotions understated and deadpan. Encourage precise, deliberate movements. Think quirky but controlled.
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong>📐 Composition:</strong> Use precise geometry. If they gesture, make it perpendicular or parallel to their body.
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong>🎨 Color Palette:</strong> Imagine pastel backgrounds - soft pinks, yellows, blues. Mention these colors in your direction.
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong>💡 Key Direction:</strong> "Look directly at the camera (audience). Move in straight lines. Pause before each new thought."
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 10px; font-size: 0.85em; color: #7f8c8d;">
+                            Actor: Alice - Romeo & Juliet
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 10: Round End -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">10</span>
+                    <h2 class="step-title">Time's Up!</h2>
+                    <p class="step-description">
+                        The 5-minute timer expires and all players are notified that the round has ended. It's now time to rate the performance.
+                    </p>
+                    <span class="step-roles">All Players</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: linear-gradient(135deg, #0d7377 0%, #8b4789 100%);">
+                        <div style="text-align: center; margin-top: 80px;">
+                            <div style="font-size: 4em;">🎉</div>
+                            <div class="screen-header" style="font-size: 2em; margin: 20px 0;">TIME'S UP!</div>
+                            <div style="font-size: 1.1em; margin: 20px 0;">Great performance!</div>
+                            <div style="opacity: 0.7;">Now it's time to rate...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 11: Rating -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">11</span>
+                    <h2 class="step-title">Rate Performance</h2>
+                    <p class="step-description">
+                        All viewers rate the performance from 1 to 5 stars and can add tags to describe what stood out. Tags provide fun feedback while the star rating determines points.
+                    </p>
+                    <span class="step-roles">Viewers Only</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: linear-gradient(135deg, #1f6feb 0%, #8957e5 100%);">
+                        <div class="screen-header" style="font-size: 1.1em;">Rate the Performance</div>
+                        <div class="info-card" style="padding: 10px; margin: 10px 0;">
+                            <strong>🎭 Actor:</strong> Alice &nbsp;&nbsp; <strong>🎬 Director:</strong> Bob
+                        </div>
+                        <div style="text-align: center; margin: 15px 0;">
+                            <div style="margin-bottom: 10px; font-size: 1em;">How was it?</div>
+                            <div class="stars">
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star active">⭐</span>
+                                <span class="star active">⭐</span>
+                            </div>
+                        </div>
+                        <div style="margin: 15px 0;">
+                            <div style="font-size: 0.9em; margin-bottom: 8px; opacity: 0.9;">Add tags (pick all that apply):</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;">
+                                <span style="background: rgba(255,255,255,0.3); border: 2px solid white; padding: 6px 12px; border-radius: 16px; font-size: 0.85em; cursor: pointer;">😂 Hilarious</span>
+                                <span style="background: rgba(255,255,255,0.3); border: 2px solid transparent; padding: 6px 12px; border-radius: 16px; font-size: 0.85em; cursor: pointer;">🔥 Intense</span>
+                                <span style="background: rgba(255,255,255,0.3); border: 2px solid white; padding: 6px 12px; border-radius: 16px; font-size: 0.85em; cursor: pointer;">🎨 Creative</span>
+                                <span style="background: rgba(255,255,255,0.3); border: 2px solid transparent; padding: 6px 12px; border-radius: 16px; font-size: 0.85em; cursor: pointer;">💯 On Point</span>
+                                <span style="background: rgba(255,255,255,0.3); border: 2px solid transparent; padding: 6px 12px; border-radius: 16px; font-size: 0.85em; cursor: pointer;">😱 Dramatic</span>
+                                <span style="background: rgba(255,255,255,0.3); border: 2px solid transparent; padding: 6px 12px; border-radius: 16px; font-size: 0.85em; cursor: pointer;">🤯 Mind-Blowing</span>
+                                <span style="background: rgba(255,255,255,0.3); border: 2px solid transparent; padding: 6px 12px; border-radius: 16px; font-size: 0.85em; cursor: pointer;">😬 Awkward</span>
+                                <span style="background: rgba(255,255,255,0.3); border: 2px solid transparent; padding: 6px 12px; border-radius: 16px; font-size: 0.85em; cursor: pointer;">👏 Authentic</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 10px; padding: 12px;">SUBMIT</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 12: League Scores & Next Round -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">12</span>
+                    <h2 class="step-title">Actor/Director League Scores</h2>
+                    <p class="step-description">
+                        After ratings, players see the league standings with score decay applied. Scores decrease over time, making it hard to maintain the lead without continuous high performances. Players vote to continue or end the game.
+                    </p>
+                    <span class="step-roles">All Players</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: linear-gradient(135deg, #8b5a00 0%, #d45a3c 100%);">
+                        <div class="screen-header" style="color: #ffa94d; font-size: 1.1em;">🎭 Actor/Director League</div>
+                        <div style="text-align: center; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; margin: 12px 0;">
+                            <div style="font-size: 0.85em; opacity: 0.9;">This Round:</div>
+                            <div style="font-size: 1.8em; font-weight: 700; color: #ffa94d;">⭐ 4.2</div>
+                            <div style="font-size: 0.8em; margin-top: 5px; color: #ff6b6b;">
+                                ⚠️ All scores decay -5% per round
+                            </div>
+                        </div>
+                        <div style="margin: 8px 0; font-weight: 600; opacity: 0.9; font-size: 0.9em;">League Standings:</div>
+                        <div class="score-list" style="background: rgba(0,0,0,0.3); padding: 10px;">
+                            <div class="score-item" style="background: rgba(255,215,0,0.2); font-size: 0.9em; padding: 8px;">
+                                <span><span class="medal">🥇</span>Charlie</span>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700;">39.9 pts</div>
+                                    <div style="font-size: 0.75em; color: #ff6b6b;">42 → -5% decay</div>
+                                </div>
+                            </div>
+                            <div class="score-item" style="background: rgba(192,192,192,0.2); font-size: 0.9em; padding: 8px;">
+                                <span><span class="medal">🥈</span>Alice</span>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700;">38.5 pts</div>
+                                    <div style="font-size: 0.75em;"><span style="color: #56d364;">+4.2</span> <span style="color: #ff6b6b;">-5%</span></div>
+                                </div>
+                            </div>
+                            <div class="score-item" style="background: rgba(205,127,50,0.2); font-size: 0.9em; padding: 8px;">
+                                <span><span class="medal">🥉</span>Bob</span>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700;">35.5 pts</div>
+                                    <div style="font-size: 0.75em;"><span style="color: #56d364;">+4.2</span> <span style="color: #ff6b6b;">-5%</span></div>
+                                </div>
+                            </div>
+                            <div class="score-item" style="background: rgba(255,255,255,0.05); font-size: 0.9em; padding: 8px;">
+                                <span>Dana</span>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700;">29.5 pts</div>
+                                    <div style="font-size: 0.75em; color: #ff6b6b;">31 → -5% decay</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin: 12px 0 8px; font-weight: 600; font-size: 0.95em;">
+                            Ready for next round?
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" style="background: #4caf50; color: white; padding: 12px;">NEXT ROUND</button>
+                            <button class="btn btn-secondary" style="padding: 12px;">END GAME</button>
+                        </div>
+                        <div style="text-align: center; margin-top: 10px; opacity: 0.6; font-size: 0.8em;">
+                            ⏱️ Auto-start in: 15s
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓</div>
+
+            <!-- Step 13: Game Over -->
+            <div class="flow-step">
+                <div class="step-info">
+                    <span class="step-number">13</span>
+                    <h2 class="step-title">Game Over - Final League Standings</h2>
+                    <p class="step-description">
+                        If players vote to end the game, final league standings are displayed. The decay system ensures dynamic competition - staying on top requires consistent excellence!
+                    </p>
+                    <span class="step-roles">All Players</span>
+                </div>
+                <div class="ux-frame">
+                    <div class="phone-notch"></div>
+                    <div class="screen-content" style="background: linear-gradient(135deg, #8b4789 0%, #d42a6a 100%);">
+                        <div class="screen-header" style="color: #ffa94d;">🏆 Final League Standings</div>
+                        <div style="text-align: center; font-size: 0.85em; margin-bottom: 10px; opacity: 0.9;">
+                            Great performances, everyone! 🎭
+                        </div>
+                        <div class="score-list" style="background: rgba(0,0,0,0.3);">
+                            <div class="score-item" style="background: linear-gradient(135deg, #b8860b 0%, #ffd700 100%); font-size: 1.05em; padding: 12px;">
+                                <span><span class="medal">🥇</span><strong>Charlie</strong></span>
+                                <span style="font-weight: 700; font-size: 1.2em;">87.3 pts</span>
+                            </div>
+                            <div class="score-item" style="background: linear-gradient(135deg, #6e7681 0%, #8b949e 100%); padding: 10px;">
+                                <span><span class="medal">🥈</span><strong>Alice</strong></span>
+                                <span style="font-weight: 700;">76.1 pts</span>
+                            </div>
+                            <div class="score-item" style="background: linear-gradient(135deg, #8b5a2b 0%, #cd7f32 100%); padding: 10px;">
+                                <span><span class="medal">🥉</span><strong>Bob</strong></span>
+                                <span style="font-weight: 700;">71.8 pts</span>
+                            </div>
+                            <div class="score-item" style="background: rgba(255,255,255,0.05); padding: 10px;">
+                                <span>Dana</span>
+                                <span style="font-weight: 700;">68.5 pts</span>
+                            </div>
+                        </div>
+                        <div style="background: rgba(255,107,107,0.2); padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.85em; border-left: 3px solid #ff6b6b;">
+                            <strong>League System:</strong> Scores decay -5% each round, preventing runaway leads and rewarding consistent high performances!
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 10px;">🎉 One more round!</button>
+                        <button class="btn btn-secondary">EXIT</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
