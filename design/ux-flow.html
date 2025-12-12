@@ -387,13 +387,13 @@
 
             <div class="arrow-down">↓</div>
 
-            <!-- Step 2: Game Room + Name Entry -->
+            <!-- Step 2: Create My Lobby -->
             <div class="flow-step">
                 <div class="step-info">
                     <span class="step-number">2</span>
-                    <h2 class="step-title">Join Game</h2>
+                    <h2 class="step-title">Create My Lobby</h2>
                     <p class="step-description">
-                        Everyone needs to be in the same game! Enter your name to join. Show your QR code to invite others, or scan someone else's code to switch games.
+                        Everyone starts by creating their own lobby! Enter your name and you'll get a unique session code. Share your QR code to invite others, or scan someone's code to join their lobby instead.
                     </p>
                     <span class="step-roles">All Players</span>
                 </div>
@@ -402,26 +402,22 @@
                     <div class="screen-content">
                         <div style="text-align: center; padding: 20px;">
                             <div style="color: #C9A875; font-size: 0.95em; margin-bottom: 20px; line-height: 1.4;">
-                                Everyone needs to be in the same game!
-                            </div>
-                            
-                            <div style="margin: 20px 0;">
-                                <div style="color: #8B7355; font-size: 0.85em; margin-bottom: 8px;">Your Game:</div>
-                                <div style="font-size: 1.8em; font-weight: bold; color: #D4A574;">Dramatic Badger</div>
-                            </div>
-                            
-                            <div class="qr-code" style="width: 140px; height: 140px; margin: 20px auto;">
-                                <div style="text-align: center;">
-                                    <div style="font-size: 2.5em;">▦</div>
-                                    <div style="font-size: 0.8em; margin-top: 5px;">Scan to join</div>
-                                </div>
+                                Start your own lobby!
                             </div>
                             
                             <div style="margin: 25px 0;">
                                 <input type="text" class="input-field" placeholder="Enter your name..." value="">
                             </div>
                             
-                            <button class="btn btn-secondary">SCAN QR CODE</button>
+                            <button class="btn btn-primary" style="margin-bottom: 15px;">CREATE MY LOBBY</button>
+                            
+                            <div style="color: #8B7355; font-size: 0.9em; margin: 20px 0;">OR</div>
+                            
+                            <div style="margin: 15px 0;">
+                                <input type="text" class="input-field" placeholder="Join code (e.g., ABC123)" value="">
+                            </div>
+                            
+                            <button class="btn btn-secondary">JOIN LOBBY</button>
                         </div>
                     </div>
                 </div>
@@ -433,27 +429,38 @@
             <div class="flow-step">
                 <div class="step-info">
                     <span class="step-number">3</span>
-                    <h2 class="step-title">Session Lobby</h2>
+                    <h2 class="step-title">Green Room</h2>
                     <p class="step-description">
-                        All players wait in the lobby. The host can see all connected players and start the game when ready. The QR code remains visible for new players to join.
+                        All players in the lobby are equal! Anyone can change their name anytime, share the QR code to invite others, or start the game when 2+ players are present. No host hierarchy - pure collaboration.
                     </p>
                     <span class="step-roles">All Players</span>
                 </div>
                 <div class="ux-frame">
                     <div class="phone-notch"></div>
                     <div class="screen-content" style="background: #161b22;">
-                        <div class="screen-header" style="color: #58a6ff;">Session Lobby</div>
-                        <div class="player-list" style="background: rgba(88,166,255,0.1);">
-                            <div style="margin-bottom: 10px; font-weight: 600; color: #58a6ff;">Players in session:</div>
-                            <div class="player-item" style="background: #0d1117;">Alice</div>
-                            <div class="player-item" style="background: #0d1117;">Bob</div>
-                            <div class="player-item" style="background: #0d1117;">Charlie</div>
-                            <div class="player-item" style="background: #0d1117; border: 2px solid #238636;">You (Dana)</div>
+                        <div class="screen-header" style="color: #58a6ff;">Lobby ABC123</div>
+                        
+                        <div style="margin: 15px 20px;">
+                            <div style="font-size: 0.85em; color: #8B7355; margin-bottom: 5px;">Your Name:</div>
+                            <input type="text" class="input-field" placeholder="Your name" value="Dana" style="background: rgba(255,255,255,0.1); border: 1px solid #58a6ff;">
+                            <div style="font-size: 0.75em; color: #8B7355; margin-top: 3px;">✏️ Tap to edit anytime</div>
                         </div>
+                        
                         <div class="qr-code" style="width: 100px; height: 100px; margin: 15px auto;">
                             <div style="font-size: 2em;">▦</div>
+                            <div style="font-size: 0.7em; margin-top: 5px;">ABC123</div>
                         </div>
-                        <button class="btn btn-primary">START GAME</button>
+                        
+                        <div class="player-list" style="background: rgba(88,166,255,0.1);">
+                            <div style="margin-bottom: 10px; font-weight: 600; color: #58a6ff;">Players (4):</div>
+                            <div class="player-item" style="background: #0d1117;">• Alice</div>
+                            <div class="player-item" style="background: #0d1117;">• Bob</div>
+                            <div class="player-item" style="background: #0d1117;">• Charlie</div>
+                            <div class="player-item" style="background: #0d1117; border: 2px solid #238636;">• Dana (You)</div>
+                        </div>
+                        
+                        <button class="btn btn-primary">🎬 START GAME</button>
+                        <div style="font-size: 0.75em; color: #8B7355; margin-top: 8px;">Anyone can start!</div>
                     </div>
                 </div>
             </div>
