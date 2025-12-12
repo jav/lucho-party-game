@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lobby Comparison: Host-Based vs Peer-to-Peer</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a0f0a 0%, #2d1810 100%);
+            color: #F5E6D3;
+            padding: 40px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #D4A574;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: Georgia, serif;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #C9A875;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .column {
+            background: rgba(45, 24, 16, 0.6);
+            border: 2px solid #8B7355;
+            border-radius: 12px;
+            padding: 25px;
+        }
+        
+        .column.old {
+            border-color: #ff6b6b;
+        }
+        
+        .column.new {
+            border-color: #56d364;
+        }
+        
+        .column-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #8B7355;
+        }
+        
+        .old .column-header {
+            color: #ff6b6b;
+            border-bottom-color: #ff6b6b;
+        }
+        
+        .new .column-header {
+            color: #56d364;
+            border-bottom-color: #56d364;
+        }
+        
+        .screen-mockup {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #8B7355;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+        
+        .screen-title {
+            color: #D4A574;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .feature-list {
+            margin: 20px 0;
+        }
+        
+        .feature {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .feature:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #56d364;
+            font-weight: bold;
+        }
+        
+        .feature.bad:before {
+            content: '✗';
+            color: #ff6b6b;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+        
+        .highlight {
+            color: #ffa94d;
+            font-weight: bold;
+        }
+        
+        .green {
+            color: #56d364;
+        }
+        
+        .red {
+            color: #ff6b6b;
+        }
+        
+        .section-title {
+            color: #D4A574;
+            font-size: 2em;
+            margin: 60px 0 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #8B7355;
+            font-family: Georgia, serif;
+        }
+        
+        .flow-diagram {
+            background: rgba(45, 24, 16, 0.6);
+            border: 2px solid #8B7355;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .flow-step {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #D4A574;
+            border-radius: 6px;
+        }
+        
+        .flow-arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #8B7355;
+            margin: 10px 0;
+        }
+        
+        .key-difference {
+            background: rgba(212, 165, 116, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #D4A574;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Lobby Architecture Comparison</h1>
+        <p class="subtitle">From Host-Based Hierarchy to Peer-to-Peer Equality</p>
+        
+        <!-- Main Comparison -->
+        <div class="comparison">
+            <div class="column old">
+                <div class="column-header">❌ Old: Host-Based Model</div>
+                
+                <div class="screen-mockup">
+                    <div class="screen-title">Landing Screen</div>
+                    <pre>┌─────────────────────┐
+│ CREATE SESSION      │ ← Host
+└─────────────────────┘
+
+┌─────────────────────┐
+│ JOIN SESSION        │ ← Everyone else
+└─────────────────────┘</pre>
+                </div>
+                
+                <div class="feature-list">
+                    <div class="feature bad">Two different user paths</div>
+                    <div class="feature bad">Creates hierarchy</div>
+                    <div class="feature bad">Only host can start game</div>
+                    <div class="feature bad">Awkward "who's the host?" moment</div>
+                    <div class="feature bad">Name set once, locked in</div>
+                </div>
+                
+                <div class="code-block">
+<span class="red">// Two different flows</span>
+createSession(<span class="highlight">"Alice"</span>)  // I'm special!
+joinSession(<span class="highlight">"Bob"</span>)     // I'm regular
+
+player.isHost === true   // Special powers
+</div>
+            </div>
+            
+            <div class="column new">
+                <div class="column-header">✅ New: Peer-to-Peer Model</div>
+                
+                <div class="screen-mockup">
+                    <div class="screen-title">Landing Screen</div>
+                    <pre>┌─────────────────────┐
+│ CREATE MY LOBBY     │ ← Everyone
+└─────────────────────┘
+
+   OR enter code to
+   join someone else</pre>
+                </div>
+                
+                <div class="feature-list">
+                    <div class="feature">Everyone starts the same way</div>
+                    <div class="feature">No hierarchy, pure collaboration</div>
+                    <div class="feature">Anyone can start game</div>
+                    <div class="feature">Natural flow: create, share, play</div>
+                    <div class="feature">Names editable anytime</div>
+                </div>
+                
+                <div class="code-block">
+<span class="green">// Everyone equal</span>
+createMyLobby(<span class="highlight">"Alice"</span>)   // My own lobby
+joinLobby(<span class="highlight">"Bob"</span>)        // Join a friend
+
+canStartGame()         // Anyone can!
+changeName(<span class="highlight">"Alice the Great"</span>) // Anytime!
+</div>
+            </div>
+        </div>
+        
+        <!-- Flow Comparison -->
+        <h2 class="section-title">User Flow Comparison</h2>
+        
+        <div class="comparison">
+            <div class="column old">
+                <div class="column-header">Old Flow</div>
+                
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <strong>Alice (Host):</strong> CREATE SESSION
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <strong>Alice:</strong> Gets QR code for session ABC123
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <strong>Bob:</strong> Scans QR → JOIN SESSION
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <strong>Bob:</strong> Marked as "regular player"
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <strong class="red">Only Alice can START GAME</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="column new">
+                <div class="column-header">New Flow</div>
+                
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <strong>Alice:</strong> CREATE MY LOBBY (ABC123)
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <strong>Alice:</strong> Alone in ABC123, shares QR
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <strong>Bob:</strong> Scans QR → Joins ABC123
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <strong>Both:</strong> Equal members of ABC123
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <strong class="green">Either Alice OR Bob can START GAME</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Technical Changes -->
+        <h2 class="section-title">Technical Implementation</h2>
+        
+        <div class="key-difference">
+            <h3 style="color: #D4A574; margin-top: 0;">Data Structure Change</h3>
+            <div class="comparison" style="gap: 20px;">
+                <div>
+                    <strong class="red">Before:</strong>
+                    <div class="code-block">
+interface Player {
+  id: string;
+  name: string;
+  <span class="red">isHost: boolean;</span> ← Special flag
+  connectionStatus: string;
+  currentRole: string;
+  totalScore: number;
+}
+                    </div>
+                </div>
+                <div>
+                    <strong class="green">After:</strong>
+                    <div class="code-block">
+interface Player {
+  id: string;
+  name: string;
+  <span class="green">joinedAt: number;</span> ← Just timestamp
+  connectionStatus: string;
+  currentRole: string;
+  totalScore: number;
+}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="key-difference">
+            <h3 style="color: #D4A574; margin-top: 0;">API Changes</h3>
+            <div class="comparison" style="gap: 20px;">
+                <div>
+                    <strong class="red">Before:</strong>
+                    <div class="code-block">
+createSession(hostName)
+  → Creates with isHost=true
+
+joinSession(sessionId, name)
+  → Joins with isHost=false
+
+startGame()
+  → <span class="red">Throws if !isHost</span>
+
+isHost()
+  → Check your privilege
+                    </div>
+                </div>
+                <div>
+                    <strong class="green">After:</strong>
+                    <div class="code-block">
+createMyLobby(playerName)
+  → Everyone creates equal
+
+joinLobby(sessionId, name)
+  → Join anyone's lobby
+
+<span class="green">changeName(newName)</span>
+  → Edit name anytime!
+
+startGame()
+  → <span class="green">Works for anyone!</span>
+
+canStartGame()
+  → Check player count
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Lobby Screen Comparison -->
+        <h2 class="section-title">Lobby Screen Mockups</h2>
+        
+        <div class="comparison">
+            <div class="column old">
+                <div class="column-header">Old Host Lobby</div>
+                <div class="screen-mockup">
+<div class="screen-title">Session ABC123 (Alice's View)</div>
+<pre>┌──────────────────────────┐
+│  Green Room              │
+│                          │
+│  Players:                │
+│  • Alice (You) [HOST] 👑 │
+│  • Bob                   │
+│  • Charlie               │
+│                          │
+│  ┌────────────────────┐  │
+│  │   START GAME       │  │
+│  └────────────────────┘  │
+│  ↑ Only you can press    │
+└──────────────────────────┘</pre>
+                </div>
+                
+                <div class="screen-mockup">
+<div class="screen-title">Session ABC123 (Bob's View)</div>
+<pre>┌──────────────────────────┐
+│  Green Room              │
+│                          │
+│  Players:                │
+│  • Alice [HOST] 👑       │
+│  • Bob (You)             │
+│  • Charlie               │
+│                          │
+│  Waiting for host to     │
+│  start the game...       │
+│                          │
+│  <span class="red">❌ No START button</span>      │
+└──────────────────────────┘</pre>
+                </div>
+            </div>
+            
+            <div class="column new">
+                <div class="column-header">New Peer-to-Peer Lobby</div>
+                <div class="screen-mockup">
+<div class="screen-title">Lobby ABC123 (Alice's View)</div>
+<pre>┌──────────────────────────┐
+│  Lobby ABC123            │
+│                          │
+│  Your Name: [Alice___] ✏️│
+│  ↑ Tap to edit anytime   │
+│                          │
+│  ┌──────────┐            │
+│  │ QR CODE  │ ← Share!   │
+│  └──────────┘            │
+│                          │
+│  Players (3):            │
+│  • Alice (You)           │
+│  • Bob                   │
+│  • Charlie               │
+│                          │
+│  ┌────────────────────┐  │
+│  │  🎬 START GAME     │  │
+│  └────────────────────┘  │
+└──────────────────────────┘</pre>
+                </div>
+                
+                <div class="screen-mockup">
+<div class="screen-title">Lobby ABC123 (Bob's View)</div>
+<pre>┌──────────────────────────┐
+│  Lobby ABC123            │
+│                          │
+│  Your Name: [Bob_____] ✏️│
+│  ↑ Tap to edit anytime   │
+│                          │
+│  ┌──────────┐            │
+│  │ QR CODE  │ ← Share!   │
+│  └──────────┘            │
+│                          │
+│  Players (3):            │
+│  • Alice                 │
+│  • Bob (You)             │
+│  • Charlie               │
+│                          │
+│  ┌────────────────────┐  │
+│  │  🎬 START GAME     │  │
+│  └────────────────────┘  │
+│  ↑ <span class="green">You can press too!</span>  │
+└──────────────────────────┘</pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scenarios -->
+        <h2 class="section-title">Real-World Scenarios</h2>
+        
+        <div class="flow-diagram">
+            <h3 style="color: #D4A574;">Scenario: Party with 6 People</h3>
+            
+            <div class="flow-step">
+                <strong>Alice:</strong> Opens app → CREATE MY LOBBY → Gets ABC123
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong>Alice:</strong> "Everyone scan this!" → Shows QR code
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong>Bob, Charlie, Dana:</strong> Scan → All join ABC123
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong>Eva:</strong> "I can't see the QR!" → Alice says "It's ABC123"
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong>Eva:</strong> Types ABC123 → Joins lobby
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong>Frank:</strong> Late arrival → Bob shows his QR (same ABC123) → Joins
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong>Charlie:</strong> "Everyone ready?" → Presses START GAME
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong class="green">✓ Game starts! All 6 players in.</strong>
+            </div>
+        </div>
+        
+        <div class="flow-diagram">
+            <h3 style="color: #D4A574;">Scenario: Name Change Mid-Lobby</h3>
+            
+            <div class="flow-step">
+                <strong>Alice:</strong> In lobby as "Alice"
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong>Alice:</strong> "Wait, I want a better name!"
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong>Alice:</strong> Taps name field → Types "Alice the Magnificent"
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong>Everyone else:</strong> Sees update instantly via Redis Pub/Sub
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                Player list now shows:
+                <ul>
+                    <li>• Alice the Magnificent</li>
+                    <li>• Bob</li>
+                    <li>• Charlie</li>
+                </ul>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">
+                <strong class="green">✓ No reload needed, pure real-time magic!</strong>
+            </div>
+        </div>
+        
+        <!-- Benefits Summary -->
+        <h2 class="section-title">Why This Is Better</h2>
+        
+        <div class="comparison">
+            <div class="column">
+                <h3 style="color: #D4A574;">Social Benefits</h3>
+                <div class="feature">More inclusive - no "special" person</div>
+                <div class="feature">Flexible invitation - anyone can share</div>
+                <div class="feature">Natural flow - create, share, play</div>
+                <div class="feature">Encourages playfulness - edit names!</div>
+            </div>
+            
+            <div class="column">
+                <h3 style="color: #D4A574;">Technical Benefits</h3>
+                <div class="feature">Simpler code - no privilege checks</div>
+                <div class="feature">Fewer edge cases - symmetric logic</div>
+                <div class="feature">Real-time showcase - name changes demo it</div>
+                <div class="feature">Easier testing - identical user paths</div>
+            </div>
+        </div>
+        
+        <div class="key-difference" style="margin-top: 40px;">
+            <h3 style="color: #D4A574; margin-top: 0;">The Core Philosophy Shift</h3>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                <strong class="red">Host-Based:</strong> "Someone is in charge, others follow."<br><br>
+                <strong class="green">Peer-to-Peer:</strong> "We're all here to have fun together. Anyone can make it happen!"
+            </p>
+        </div>
+    </div>
+</body>
+</html>

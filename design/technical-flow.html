@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucho Party Game - Technical Flow</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a0f0a 0%, #2d1810 100%);
+            color: #F5E6D3;
+            padding: 40px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #D4A574;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 40px;
+            font-family: Georgia, serif;
+        }
+        
+        .phase-box {
+            background: rgba(45, 24, 16, 0.6);
+            border: 2px solid #8B7355;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .phase-header {
+            color: #D4A574;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .phase-number {
+            background: #D4A574;
+            color: #1a0f0a;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .phase-details {
+            margin-left: 40px;
+        }
+        
+        .detail-row {
+            margin: 8px 0;
+        }
+        
+        .label {
+            color: #C9A875;
+            font-weight: 600;
+        }
+        
+        .value {
+            color: #F5E6D3;
+        }
+        
+        .redis-key {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #D4A574;
+        }
+        
+        .action {
+            background: rgba(212, 165, 116, 0.2);
+            padding: 8px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border-left: 3px solid #D4A574;
+        }
+        
+        .event {
+            background: rgba(139, 115, 85, 0.2);
+            padding: 8px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border-left: 3px solid #8B7355;
+        }
+        
+        .arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #8B7355;
+            margin: 10px 0;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        .highlight {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .section {
+            margin-top: 60px;
+        }
+        
+        .section-title {
+            color: #D4A574;
+            font-size: 2em;
+            border-bottom: 2px solid #8B7355;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-family: Georgia, serif;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .card {
+            background: rgba(45, 24, 16, 0.6);
+            border: 2px solid #8B7355;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .card-title {
+            color: #D4A574;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Lucho Party Game - Technical Flow</h1>
+        
+        <!-- Game Flow -->
+        <div class="section">
+            <h2 class="section-title">Complete Game Flow</h2>
+            
+            <div class="phase-box">
+                <div class="phase-header">
+                    <div class="phase-number">1</div>
+                    <div>LOBBY</div>
+                </div>
+                <div class="phase-details">
+                    <div class="detail-row">
+                        <span class="label">Trigger:</span> <span class="value">createSession() or joinSession()</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Who sees:</span> <span class="value">All players</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actions:</span>
+                        <div class="action">Host can start game with startGame()</div>
+                        <div class="action">Players can join anytime</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Events:</span>
+                        <div class="event">player-joined, player-left</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Redis:</span> <span class="redis-key">game:{sessionId}:state</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <div class="phase-header">
+                    <div class="phase-number">2</div>
+                    <div>ACTOR-SELECTING</div>
+                </div>
+                <div class="phase-details">
+                    <div class="detail-row">
+                        <span class="label">Trigger:</span> <span class="value">startGame() or new round</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Logic:</span> <span class="value">Random actor selected from all players</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actor sees:</span>
+                        <div class="action">Scene selection screen (5 scenes)</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Others see:</span> <span class="value">Waiting screen</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actions:</span>
+                        <div class="action">Actor calls selectScene(sceneId)</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Events:</span>
+                        <div class="event">game-started (with actorId)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <div class="phase-header">
+                    <div class="phase-number">3</div>
+                    <div>DIRECTOR-SELECTING</div>
+                </div>
+                <div class="phase-details">
+                    <div class="detail-row">
+                        <span class="label">Trigger:</span> <span class="value">selectScene(sceneId)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Logic:</span> <span class="value">Random director selected (excluding actor)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Director sees:</span>
+                        <div class="action">Style selection screen (5 styles)</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Others see:</span> <span class="value">Waiting screen</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actions:</span>
+                        <div class="action">Director calls selectDirectorStyle(styleId)</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Events:</span>
+                        <div class="event">scene-selected (with sceneId, directorId)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <div class="phase-header">
+                    <div class="phase-number">4</div>
+                    <div>PRE-ROUND (Ready Check)</div>
+                </div>
+                <div class="phase-details">
+                    <div class="detail-row">
+                        <span class="label">Trigger:</span> <span class="value">selectDirectorStyle(styleId)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">All players see:</span>
+                        <div class="value">
+                            - Actor name & scene<br>
+                            - Director name & style
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actor/Director see:</span>
+                        <div class="action">START ROUND button</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Viewers see:</span> <span class="value">Waiting message</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actions:</span>
+                        <div class="action">Actor calls markReady()</div>
+                        <div class="action">Director calls markReady()</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Logic:</span> <span class="value">Round starts when <span class="highlight">BOTH</span> ready</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Events:</span>
+                        <div class="event">style-selected, ready-marked</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Redis:</span> <span class="redis-key">game:{sessionId}:selection</span> (temp state)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <div class="phase-header">
+                    <div class="phase-number">5</div>
+                    <div>ROUND-ACTIVE</div>
+                </div>
+                <div class="phase-details">
+                    <div class="detail-row">
+                        <span class="label">Trigger:</span> <span class="value">Both actor & director ready</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Duration:</span> <span class="value highlight">300 seconds (5 minutes)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Timer:</span> <span class="value">Server-side with setTimeout()</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actor sees:</span> <span class="value">Scene script + timer</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Director sees:</span> <span class="value">Style directions + timer</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Viewers see:</span> <span class="value">Performance info + timer</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Auto-end:</span>
+                        <div class="code-block">
+setTimeout(() => {<br>
+  &nbsp;&nbsp;this.endRound();<br>
+}, ROUND_DURATION * 1000);
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Events:</span>
+                        <div class="event">round-started (with startTime, duration)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <div class="phase-header">
+                    <div class="phase-number">6</div>
+                    <div>ROUND-ENDED</div>
+                </div>
+                <div class="phase-details">
+                    <div class="detail-row">
+                        <span class="label">Trigger:</span> <span class="value">Timer expires</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Duration:</span> <span class="value">5 seconds</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">All players see:</span> <span class="value">🎉 TIME'S UP! notification</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Auto-transition:</span>
+                        <div class="code-block">
+setTimeout(() => {<br>
+  &nbsp;&nbsp;this.transitionToRating();<br>
+}, 5000);
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Events:</span>
+                        <div class="event">round-ended</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <div class="phase-header">
+                    <div class="phase-number">7</div>
+                    <div>RATING</div>
+                </div>
+                <div class="phase-details">
+                    <div class="detail-row">
+                        <span class="label">Trigger:</span> <span class="value">Auto after round-ended</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Viewers see:</span>
+                        <div class="action">Star rating (1-5) + tags</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actor/Director see:</span> <span class="value">Waiting screen</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actions:</span>
+                        <div class="action">Viewers call submitRating(stars, tags)</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Logic:</span> <span class="value">When all viewers rated → calculateScores()</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Events:</span>
+                        <div class="event">rating-started, rating-submitted</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <div class="phase-header">
+                    <div class="phase-number">8</div>
+                    <div>SCORES</div>
+                </div>
+                <div class="phase-details">
+                    <div class="detail-row">
+                        <span class="label">Trigger:</span> <span class="value">All viewers submitted ratings</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Calculation:</span>
+                        <div class="code-block">
+// Average all viewer ratings<br>
+averageScore = sum(stars) / ratingCount;<br>
+<br>
+// Apply <span class="highlight">-5% decay</span> to ALL players<br>
+player.totalScore *= 0.95;<br>
+<br>
+// Add new score to actor & director<br>
+actor.totalScore += averageScore;<br>
+director.totalScore += averageScore;
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">All players see:</span>
+                        <div class="value">
+                            - This round's average score<br>
+                            - League standings (sorted by totalScore)<br>
+                            - Score changes with decay indicator
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Duration:</span> <span class="value">10 seconds</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Auto-transition:</span>
+                        <div class="code-block">
+setTimeout(() => {<br>
+  &nbsp;&nbsp;this.transitionToContinueVote();<br>
+}, 10000);
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Events:</span>
+                        <div class="event">scores-calculated (with averageScore)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <div class="phase-header">
+                    <div class="phase-number">9</div>
+                    <div>CONTINUE-VOTE</div>
+                </div>
+                <div class="phase-details">
+                    <div class="detail-row">
+                        <span class="label">Trigger:</span> <span class="value">Auto after scores</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">All players see:</span>
+                        <div class="action">YES / NO buttons</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Actions:</span>
+                        <div class="action">Players call voteToContinue(true/false)</div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Timeout:</span> <span class="value highlight">30 seconds</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Decision Logic:</span>
+                        <div class="code-block">
+const shouldContinue = <br>
+  &nbsp;&nbsp;yesVotes > totalVotes / 2 ||  // Majority yes<br>
+  &nbsp;&nbsp;totalVotes === 0;              // Timeout<br>
+<br>
+if (shouldContinue) {<br>
+  &nbsp;&nbsp;startNewRound();  // → ACTOR-SELECTING<br>
+} else {<br>
+  &nbsp;&nbsp;endGame();        // → GAME-OVER<br>
+}
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Events:</span>
+                        <div class="event">continue-vote-started, vote-submitted</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="phase-box">
+                <div class="phase-header">
+                    <div class="phase-number">10</div>
+                    <div>GAME-OVER</div>
+                </div>
+                <div class="phase-details">
+                    <div class="detail-row">
+                        <span class="label">Trigger:</span> <span class="value">Majority voted NO or timeout with no yes votes</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">All players see:</span>
+                        <div class="value">
+                            - 🏆 Final standings<br>
+                            - Total scores with medals (🥇🥈🥉)<br>
+                            - Option to play again or exit
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Events:</span>
+                        <div class="event">game-over</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Redis Architecture -->
+        <div class="section">
+            <h2 class="section-title">Redis Architecture</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">State Storage</div>
+                    <div class="redis-key">game:{sessionId}:state</div>
+                    <div style="margin-top: 10px;">
+                        <div class="label">Type:</div> String (JSON)<br>
+                        <div class="label">Expiry:</div> 24 hours<br>
+                        <div class="label">Size:</div> ~10KB per game
+                    </div>
+                    <div class="code-block" style="margin-top: 10px; font-size: 0.8em;">
+{<br>
+  &nbsp;&nbsp;"sessionId": "ABC123",<br>
+  &nbsp;&nbsp;"phase": "round-active",<br>
+  &nbsp;&nbsp;"players": {...},<br>
+  &nbsp;&nbsp;"currentRound": {...},<br>
+  &nbsp;&nbsp;"roundHistory": [...]<br>
+}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Selection State</div>
+                    <div class="redis-key">game:{sessionId}:selection</div>
+                    <div style="margin-top: 10px;">
+                        <div class="label">Type:</div> String (JSON)<br>
+                        <div class="label">Expiry:</div> 1 hour<br>
+                        <div class="label">Purpose:</div> Ready check
+                    </div>
+                    <div class="code-block" style="margin-top: 10px; font-size: 0.8em;">
+{<br>
+  &nbsp;&nbsp;"actorId": "player_123",<br>
+  &nbsp;&nbsp;"directorId": "player_456",<br>
+  &nbsp;&nbsp;"actorReady": false,<br>
+  &nbsp;&nbsp;"directorReady": true<br>
+}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Pub/Sub Events</div>
+                    <div class="redis-key">game:{sessionId}:events</div>
+                    <div style="margin-top: 10px;">
+                        <div class="label">Type:</div> Channel<br>
+                        <div class="label">Purpose:</div> Real-time sync<br>
+                        <div class="label">Latency:</div> < 100ms
+                    </div>
+                    <div class="code-block" style="margin-top: 10px; font-size: 0.8em;">
+{<br>
+  &nbsp;&nbsp;"event": "round-started",<br>
+  &nbsp;&nbsp;"data": {<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;"startTime": 1702391234567<br>
+  &nbsp;&nbsp;},<br>
+  &nbsp;&nbsp;"timestamp": 1702391234567<br>
+}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API Reference -->
+        <div class="section">
+            <h2 class="section-title">API Reference</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">Session Management</div>
+                    <div class="code-block">
+<span class="highlight">createSession</span>(hostName)<br>
+→ Creates new game session<br>
+→ Returns GameState<br>
+<br>
+<span class="highlight">joinSession</span>(sessionId, name)<br>
+→ Joins existing session<br>
+→ Only works in lobby phase<br>
+<br>
+<span class="highlight">leaveSession</span>()<br>
+→ Disconnects from session
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Game Actions</div>
+                    <div class="code-block">
+<span class="highlight">startGame</span>()<br>
+→ Host only<br>
+→ Starts first round<br>
+<br>
+<span class="highlight">selectScene</span>(sceneId)<br>
+→ Actor only<br>
+→ Triggers director selection<br>
+<br>
+<span class="highlight">selectDirectorStyle</span>(styleId)<br>
+→ Director only<br>
+→ Moves to pre-round
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Round Actions</div>
+                    <div class="code-block">
+<span class="highlight">markReady</span>()<br>
+→ Actor or Director<br>
+→ Both must call to start<br>
+<br>
+<span class="highlight">submitRating</span>(stars, tags)<br>
+→ Viewers only<br>
+→ 1-5 stars + tag array<br>
+<br>
+<span class="highlight">voteToContinue</span>(vote)<br>
+→ All players<br>
+→ true/false for yes/no
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Helper Functions</div>
+                    <div class="code-block">
+<span class="highlight">getCurrentPlayer</span>()<br>
+→ Returns current player<br>
+<br>
+<span class="highlight">isHost</span>()<br>
+→ Returns boolean<br>
+<br>
+<span class="highlight">isActor</span>()<br>
+<span class="highlight">isDirector</span>()<br>
+<span class="highlight">isViewer</span>()<br>
+→ Role checking helpers
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Key Features -->
+        <div class="section">
+            <h2 class="section-title">Key Technical Features</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">🎯 Random Selection</div>
+                    <p>
+                        Actor and director are randomly selected from available players.
+                        Director selection excludes the current actor to ensure different roles.
+                    </p>
+                    <div class="code-block" style="font-size: 0.8em;">
+selectRandomPlayer(playerIds, exclude) {<br>
+  &nbsp;&nbsp;const available = playerIds<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;.filter(id => !exclude.includes(id));<br>
+  &nbsp;&nbsp;return available[random(available.length)];<br>
+}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">⏱️ Server-Side Timer</div>
+                    <p>
+                        5-minute round timer runs on server to prevent client manipulation.
+                        Auto-ends round and transitions to next phase.
+                    </p>
+                    <div class="code-block" style="font-size: 0.8em;">
+setTimeout(() => {<br>
+  &nbsp;&nbsp;this.endRound();<br>
+}, ROUND_DURATION * 1000);
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">📊 Score Decay System</div>
+                    <p>
+                        -5% decay applied to ALL players every round prevents runaway leads.
+                        Actor and director get new score AFTER decay.
+                    </p>
+                    <div class="code-block" style="font-size: 0.8em;">
+// Decay all<br>
+player.totalScore *= 0.95;<br>
+<br>
+// Add new<br>
+actor.totalScore += averageScore;
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">🔄 Real-Time Sync</div>
+                    <p>
+                        Redis Pub/Sub ensures all clients receive updates instantly.
+                        No polling required - push-based architecture.
+                    </p>
+                    <div class="code-block" style="font-size: 0.8em;">
+redis.subscribe('game:ABC123:events');<br>
+<br>
+redis.on('message', (channel, msg) => {<br>
+  &nbsp;&nbsp;const {event, data} = JSON.parse(msg);<br>
+  &nbsp;&nbsp;updateUI(event, data);<br>
+});
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

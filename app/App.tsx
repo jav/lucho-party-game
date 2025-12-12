@@ -1,6 +1,51 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Pressable, TextInput, Animated } from 'react-native';
+import { StyleSheet, Text, View, Pressable, TextInput, Animated, Platform } from 'react-native';
+
+// Add global styles for web to make it feel more app-like
+if (Platform.OS === 'web') {
+  // Prevent scrolling and make it full viewport
+  const style = document.createElement('style');
+  style.textContent = `
+    html, body, #root {
+      height: 100vh;
+      height: 100dvh; /* Dynamic viewport height for mobile */
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      position: fixed;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      /* Safe area support for notched devices */
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    * {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    /* Prevent pull-to-refresh */
+    body {
+      overscroll-behavior-y: contain;
+    }
+    /* Prevent double-tap zoom */
+    button, a {
+      touch-action: manipulation;
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // Add viewport meta tag for better mobile support
+  const viewport = document.createElement('meta');
+  viewport.name = 'viewport';
+  viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+  document.head.appendChild(viewport);
+}
 
 export default function App() {
   const [screen, setScreen] = useState(1);
@@ -116,7 +161,7 @@ export default function App() {
   if (screen === 3) {
     return (
       <View style={styles.container}>
-        <Text style={styles.lobbyHeader}>Session Lobby</Text>
+        <Text style={styles.lobbyHeader}>Green Room</Text>
         
         <View style={styles.playerList}>
           <Text style={styles.playerListTitle}>Players in session:</Text>

@@ -24,7 +24,20 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single",
+      "backgroundColor": "#1a0f0a",
+      "themeColor": "#D4A574",
+      "display": "fullscreen",
+      "orientation": "portrait",
+      "name": "Lucho Party Game",
+      "shortName": "Lucho",
+      "description": "Theatrical party game with improvised directing styles",
+      "startUrl": "/",
+      "scope": "/",
+      "lang": "en",
+      "preferRelatedApplications": false
     }
   }
 }

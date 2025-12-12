@@ -110,7 +110,7 @@ export default function App() {
   if (screen === 3) {
     return (
       <View style={styles.container}>
-        <Text style={styles.lobbyHeader}>Session Lobby</Text>
+        <Text style={styles.lobbyHeader}>Green Room</Text>
         
         <View style={styles.playerList}>
           <Text style={styles.playerListTitle}>Players in session:</Text>
