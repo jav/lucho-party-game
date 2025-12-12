@@ -1,0 +1,1446 @@
+import { StatusBar } from 'expo-status-bar';
+import { useState, useEffect, useRef } from 'react';
+import { StyleSheet, Text, View, Pressable, TextInput, Animated, Platform } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
+
+// Add global styles for web to make it feel more app-like
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  // Prevent scrolling and make it full viewport
+  const style = document.createElement('style');
+  style.textContent = `
+    html, body, #root {
+      height: 100vh;
+      height: 100dvh; /* Dynamic viewport height for mobile */
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      position: fixed;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      /* Safe area support for notched devices */
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    * {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    /* Prevent pull-to-refresh */
+    body {
+      overscroll-behavior-y: contain;
+    }
+    /* Prevent double-tap zoom */
+    button, a {
+      touch-action: manipulation;
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // Add viewport meta tag for better mobile support
+  const viewport = document.createElement('meta');
+  viewport.name = 'viewport';
+  viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+  document.head.appendChild(viewport);
+}
+
+export default function App() {
+  const [screen, setScreen] = useState(1);
+  const [playerName, setPlayerName] = useState('');
+  const [sessionId, setSessionId] = useState('ABC123'); // Generated or from URL
+  const [joinSessionId, setJoinSessionId] = useState<string | null>(null);
+  const [timeLeft, setTimeLeft] = useState(300);
+  const [selectedStars, setSelectedStars] = useState(0);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Check URL parameters for deep linking (QR code scanning)
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const joinCode = urlParams.get('join');
+      if (joinCode) {
+        setJoinSessionId(joinCode);
+        setScreen(2); // Go to name entry screen
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.08,
+          duration: 800,
+          useNativeDriver: Platform.OS !== 'web',
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: Platform.OS !== 'web',
+        }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, []);
+
+  useEffect(() => {
+    if (screen >= 8 && screen <= 10) {
+      const timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            if (screen === 8) {
+              setScreen(9);
+            } else if (screen === 9) {
+              setScreen(10);
+            } else if (screen === 10) {
+              setScreen(11);
+            }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [screen]);
+
+  useEffect(() => {
+    if (screen === 11) {
+      const autoAdvance = setTimeout(() => {
+        setScreen(12);
+      }, 5000);
+      return () => clearTimeout(autoAdvance);
+    }
+  }, [screen]);
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  };
+
+  if (screen === 1) {
+    return (
+      <Pressable style={styles.container} onPress={() => setScreen(2)}>
+        <Text style={styles.title}>Studio Lucho</Text>
+        <Text style={styles.emoji}>🎭</Text>
+        <Text style={styles.subtitle}>
+          Theatrical improvisation meets competitive league play
+        </Text>
+        <StatusBar style="light" />
+      </Pressable>
+    );
+  }
+
+  if (screen === 2) {
+    return (
+      <Pressable style={styles.container} onPress={() => setScreen(3)}>
+        <View style={styles.gameRoom}>
+          {joinSessionId ? (
+            <Text style={styles.helpText}>
+              Joining session: {joinSessionId}
+            </Text>
+          ) : (
+            <Text style={styles.helpText}>
+              Everyone needs to be in the same game!
+            </Text>
+          )}
+          
+          <View style={styles.gameNameSection}>
+            <Text style={styles.gameLabel}>Your Game:</Text>
+            <Text style={styles.gameName}>Dramatic Badger</Text>
+          </View>
+          
+          <View style={styles.qrCode}>
+            <QRCode
+              value={`https://jav.github.io/lucho-party-game/?join=${sessionId}`}
+              size={120}
+              backgroundColor="transparent"
+              color="#D4A574"
+            />
+            <Text style={styles.qrLabel}>Scan to join</Text>
+          </View>
+          
+          <TextInput
+            style={styles.nameInput}
+            placeholder="Enter your name..."
+            placeholderTextColor="#8B7355"
+            value={playerName}
+            onChangeText={setPlayerName}
+          />
+          
+          <View style={styles.scanButton}>
+            <Text style={styles.scanButtonText}>SCAN QR CODE</Text>
+          </View>
+        </View>
+        <StatusBar style="light" />
+      </Pressable>
+    );
+  }
+
+  if (screen === 3) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.lobbyHeader}>Green Room</Text>
+        
+        <View style={styles.playerList}>
+          <Text style={styles.playerListTitle}>Players in session:</Text>
+          <View style={styles.playerItem}>
+            <Text style={styles.playerName}>Alice</Text>
+          </View>
+          <View style={styles.playerItem}>
+            <Text style={styles.playerName}>Bob</Text>
+          </View>
+          <View style={styles.playerItem}>
+            <Text style={styles.playerName}>Charlie</Text>
+          </View>
+          <View style={[styles.playerItem, styles.playerItemYou]}>
+            <Text style={styles.playerName}>You ({playerName || 'Dana'})</Text>
+          </View>
+        </View>
+        
+        <View style={styles.qrCodeSmall}>
+          <QRCode
+            value={`https://jav.github.io/lucho-party-game/?join=${sessionId}`}
+            size={80}
+            backgroundColor="transparent"
+            color="#D4A574"
+          />
+          <Text style={styles.qrLabel}>Share code: {sessionId}</Text>
+        </View>
+        
+        <Pressable onPress={() => setScreen(4)}>
+          <Animated.View style={[
+            styles.startButton,
+            { transform: [{ scale: pulseAnim }] }
+          ]}>
+            <Text style={styles.startButtonText}>START GAME</Text>
+          </Animated.View>
+        </Pressable>
+        
+        <StatusBar style="light" />
+      </View>
+    );
+  }
+
+  if (screen === 4) {
+    return (
+      <Pressable style={styles.actorScreen} onPress={() => setScreen(5)}>
+        <Text style={styles.roleHeader}>You Are The Actor! 🎭</Text>
+        <Text style={styles.roleSubtitle}>Choose your scene:</Text>
+        
+        <View style={styles.sceneOption}>
+          <Text style={styles.sceneTitle}>📜 Romeo & Juliet</Text>
+          <Text style={styles.sceneSubtitle}>Balcony Scene</Text>
+        </View>
+        
+        <View style={[styles.sceneOption, styles.sceneOptionSelected]}>
+          <Text style={styles.sceneTitle}>💀 Hamlet</Text>
+          <Text style={styles.sceneSubtitle}>To be or not to be</Text>
+        </View>
+        
+        <View style={styles.sceneOption}>
+          <Text style={styles.sceneTitle}>⚔️ Macbeth</Text>
+          <Text style={styles.sceneSubtitle}>Dagger speech</Text>
+        </View>
+        
+        <View style={styles.sceneOption}>
+          <Text style={styles.sceneTitle}>🌟 Star Wars</Text>
+          <Text style={styles.sceneSubtitle}>I am your father</Text>
+        </View>
+        
+        <View style={styles.confirmButton}>
+          <Text style={styles.confirmButtonText}>CONFIRM</Text>
+        </View>
+        
+        <StatusBar style="light" />
+      </Pressable>
+    );
+  }
+
+  if (screen === 5) {
+    return (
+      <Pressable style={styles.directorScreen} onPress={() => setScreen(6)}>
+        <Text style={styles.roleHeader}>You Are The Director! 🎬</Text>
+        <Text style={styles.roleSubtitle}>Direct the scene as:</Text>
+        
+        <View style={styles.directorOption}>
+          <Text style={styles.directorName}>🔪 Quentin Tarantino</Text>
+        </View>
+        
+        <View style={[styles.directorOption, styles.directorOptionSelected]}>
+          <Text style={styles.directorName}>🎨 Wes Anderson</Text>
+        </View>
+        
+        <View style={styles.directorOption}>
+          <Text style={styles.directorName}>🌀 Christopher Nolan</Text>
+        </View>
+        
+        <View style={styles.directorOption}>
+          <Text style={styles.directorName}>🦇 Tim Burton</Text>
+        </View>
+        
+        <View style={styles.directorOption}>
+          <Text style={styles.directorName}>🐦 Alfred Hitchcock</Text>
+        </View>
+        
+        <View style={styles.confirmButton}>
+          <Text style={styles.confirmButtonText}>CONFIRM</Text>
+        </View>
+        
+        <StatusBar style="light" />
+      </Pressable>
+    );
+  }
+
+  if (screen === 6) {
+    return (
+      <Pressable style={styles.readyScreen} onPress={() => setScreen(7)}>
+        <Text style={styles.readyHeader}>Round Ready!</Text>
+        
+        <View style={styles.infoCard}>
+          <Text style={styles.infoCardTitle}>🎭 ACTOR</Text>
+          <Text style={styles.infoCardName}>Alice</Text>
+          <Text style={styles.infoCardDetail}>Scene: Romeo & Juliet</Text>
+          <Text style={styles.infoCardSubDetail}>Balcony Scene</Text>
+        </View>
+        
+        <View style={styles.infoCard}>
+          <Text style={styles.infoCardTitle}>🎬 DIRECTOR</Text>
+          <Text style={styles.infoCardName}>Bob</Text>
+          <Text style={styles.infoCardDetail}>Style: Wes Anderson</Text>
+        </View>
+        
+        <Text style={styles.waitingText}>
+          Waiting for Actor & Director to start...
+        </Text>
+        
+        <StatusBar style="dark" />
+      </Pressable>
+    );
+  }
+
+  if (screen === 7) {
+    return (
+      <View style={styles.readyStartScreen}>
+        <Text style={styles.readyHeader}>Round Ready!</Text>
+        
+        <View style={styles.infoCardDark}>
+          <Text style={styles.infoCardTitle}>🎭 ACTOR</Text>
+          <Text style={styles.infoCardName}>Alice (YOU)</Text>
+          <Text style={styles.infoCardDetail}>Scene: Romeo & Juliet</Text>
+          <Text style={styles.infoCardSubDetail}>Balcony Scene</Text>
+        </View>
+        
+        <View style={styles.infoCardDark}>
+          <Text style={styles.infoCardTitle}>🎬 DIRECTOR</Text>
+          <Text style={styles.infoCardName}>Bob</Text>
+          <Text style={styles.infoCardDetail}>Style: Wes Anderson</Text>
+        </View>
+        
+        <Pressable onPress={() => { setTimeLeft(300); setScreen(8); }}>
+          <Animated.View style={[
+            styles.startRoundButton,
+            { transform: [{ scale: pulseAnim }] }
+          ]}>
+            <Text style={styles.startRoundButtonText}>▶ START ROUND</Text>
+          </Animated.View>
+        </Pressable>
+        
+        <StatusBar style="light" />
+      </View>
+    );
+  }
+
+  if (screen === 8) {
+    const formatTime = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    return (
+      <Pressable style={styles.performanceScreen} onPress={() => setScreen(9)}>
+        <Text style={styles.performanceHeader}>🎬 Round In Progress</Text>
+        <Text style={styles.timer}>{formatTime(timeLeft)}</Text>
+        
+        <View style={styles.performanceCard}>
+          <Text style={styles.performanceCardText}><Text style={styles.bold}>Actor:</Text> Alice</Text>
+        </View>
+        
+        <View style={styles.performanceCard}>
+          <Text style={styles.performanceCardText}><Text style={styles.bold}>Director:</Text> Bob (Wes Anderson)</Text>
+        </View>
+        
+        <View style={styles.performanceCard}>
+          <Text style={styles.performanceCardText}><Text style={styles.bold}>Scene:</Text> Romeo & Juliet</Text>
+        </View>
+        
+        <Text style={styles.performanceEmoji}>🎭</Text>
+        <Text style={styles.performanceStatus}>Performance happening...</Text>
+        
+        <StatusBar style="light" />
+      </Pressable>
+    );
+  }
+
+  if (screen === 9) {
+    const formatTime = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    return (
+      <Pressable style={styles.actorPerformanceScreen} onPress={() => setScreen(10)}>
+        <Text style={styles.actorPerformanceHeader}>🎭 ACTOR - Romeo & Juliet</Text>
+        <Text style={styles.actorTimer}>{formatTime(timeLeft)}</Text>
+        
+        <View style={styles.scriptBox}>
+          <Text style={styles.scriptTitle}>BALCONY SCENE</Text>
+          <Text style={styles.scriptDirection}>[Romeo stands below Juliet's balcony, gazing up]</Text>
+          <Text style={styles.scriptLine}><Text style={styles.bold}>ROMEO:</Text> But soft, what light through yonder window breaks? It is the east, and Juliet is the sun.</Text>
+          <Text style={styles.scriptDirection}>[Juliet appears at the window]</Text>
+          <Text style={styles.scriptLine}>Arise, fair sun, and kill the envious moon, who is already sick and pale with grief...</Text>
+          <Text style={styles.scriptDirection}>[Pause, look up lovingly]</Text>
+          <Text style={styles.scriptLine}>O, that I were a glove upon that hand, that I might touch that cheek!</Text>
+        </View>
+        
+        <Text style={styles.directorNote}>Director: Bob (Wes Anderson)</Text>
+        
+        <StatusBar style="light" />
+      </Pressable>
+    );
+  }
+
+  if (screen === 10) {
+    const formatTime = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const handlePress = () => {
+      setTimeLeft(Math.max(0, timeLeft - 15));
+    };
+
+    return (
+      <Pressable style={styles.directorPerformanceScreen} onPress={handlePress}>
+        <Text style={styles.directorPerformanceHeader}>🎬 DIRECTOR - Wes Anderson</Text>
+        <Text style={styles.directorTimer}>{formatTime(timeLeft)}</Text>
+        
+        <View style={styles.directingBox}>
+          <Text style={styles.directingTitle}>DIRECTING AS WES ANDERSON</Text>
+          <Text style={styles.directingPoint}><Text style={styles.bold}>🎨 Visual Style:</Text> Everything should be perfectly symmetrical. Have the actor stand centered, facing directly forward when possible.</Text>
+          <Text style={styles.directingPoint}><Text style={styles.bold}>🎭 Performance:</Text> Keep emotions understated and deadpan. Encourage precise, deliberate movements. Think quirky but controlled.</Text>
+          <Text style={styles.directingPoint}><Text style={styles.bold}>📐 Composition:</Text> Use precise geometry. If they gesture, make it perpendicular or parallel to their body.</Text>
+          <Text style={styles.directingPoint}><Text style={styles.bold}>💡 Key Direction:</Text> "Look directly at the camera (audience). Move in straight lines. Pause before each new thought."</Text>
+        </View>
+        
+        <Text style={styles.actorNote}>Actor: Alice - Romeo & Juliet</Text>
+        
+        <StatusBar style="light" />
+      </Pressable>
+    );
+  }
+
+  if (screen === 11) {
+    return (
+      <Pressable style={styles.timeUpScreen} onPress={() => setScreen(12)}>
+        <Text style={styles.timeUpEmoji}>🎉</Text>
+        <Text style={styles.timeUpHeader}>TIME'S UP!</Text>
+        <Text style={styles.timeUpSubtext}>Great performance!</Text>
+        <Text style={styles.timeUpNote}>Now it's time to rate...</Text>
+        
+        <StatusBar style="light" />
+      </Pressable>
+    );
+  }
+
+  if (screen === 12) {
+    const tags = [
+      '😂 Hilarious', '🔥 Intense', '🎨 Creative', '💯 On Point',
+      '😱 Dramatic', '🤯 Mind-Blowing', '😬 Awkward', '👏 Authentic'
+    ];
+
+    return (
+      <View style={styles.ratingScreen}>
+        <Text style={styles.ratingHeader}>Rate the Performance</Text>
+        
+        <View style={styles.ratingInfoCard}>
+          <Text style={styles.ratingInfo}>🎭 Actor: Alice    🎬 Director: Bob</Text>
+        </View>
+        
+        <View style={styles.starsSection}>
+          <Text style={styles.starsPrompt}>How was it?</Text>
+          <View style={styles.starsContainer}>
+            {[1, 2, 3, 4, 5].map(star => (
+              <Pressable key={star} onPress={() => setSelectedStars(star)}>
+                <Text style={[
+                  styles.star,
+                  selectedStars >= star && styles.starActive
+                ]}>⭐</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+        
+        <View style={styles.tagsSection}>
+          <Text style={styles.tagsPrompt}>Add tags (pick all that apply):</Text>
+          <View style={styles.tagsContainer}>
+            {tags.map(tag => (
+              <Pressable key={tag} onPress={() => toggleTag(tag)}>
+                <View style={[
+                  styles.tag,
+                  selectedTags.includes(tag) && styles.tagSelected
+                ]}>
+                  <Text style={styles.tagText}>{tag}</Text>
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+        
+        <Pressable onPress={() => setScreen(13)}>
+          <Animated.View style={[
+            styles.submitButton,
+            { transform: [{ scale: pulseAnim }] }
+          ]}>
+            <Text style={styles.submitButtonText}>SUBMIT</Text>
+          </Animated.View>
+        </Pressable>
+        
+        <StatusBar style="light" />
+      </View>
+    );
+  }
+
+  if (screen === 13) {
+    return (
+      <View style={styles.leagueScreen}>
+        <Text style={styles.leagueHeader}>🎭 Actor/Director League</Text>
+        
+        <View style={styles.thisRoundCard}>
+          <Text style={styles.thisRoundLabel}>This Round:</Text>
+          <Text style={styles.thisRoundScore}>⭐ 4.2</Text>
+          <Text style={styles.decayWarning}>⚠️ All scores decay -5% per round</Text>
+        </View>
+        
+        <Text style={styles.standingsLabel}>League Standings:</Text>
+        
+        <View style={styles.scoreList}>
+          <View style={[styles.scoreItem, styles.scoreItemGold]}>
+            <Text style={styles.scoreItemText}>
+              <Text style={styles.medal}>🥇</Text>Charlie
+            </Text>
+            <View style={styles.scoreItemRight}>
+              <Text style={styles.scorePoints}>39.9 pts</Text>
+              <Text style={styles.scoreDecay}>42 → -5% decay</Text>
+            </View>
+          </View>
+          
+          <View style={[styles.scoreItem, styles.scoreItemSilver]}>
+            <Text style={styles.scoreItemText}>
+              <Text style={styles.medal}>🥈</Text>Alice
+            </Text>
+            <View style={styles.scoreItemRight}>
+              <Text style={styles.scorePoints}>38.5 pts</Text>
+              <Text style={styles.scoreChange}>
+                <Text style={styles.scoreGain}>+4.2</Text> <Text style={styles.scoreLoss}>-5%</Text>
+              </Text>
+            </View>
+          </View>
+          
+          <View style={[styles.scoreItem, styles.scoreItemBronze]}>
+            <Text style={styles.scoreItemText}>
+              <Text style={styles.medal}>🥉</Text>Bob
+            </Text>
+            <View style={styles.scoreItemRight}>
+              <Text style={styles.scorePoints}>35.5 pts</Text>
+              <Text style={styles.scoreChange}>
+                <Text style={styles.scoreGain}>+4.2</Text> <Text style={styles.scoreLoss}>-5%</Text>
+              </Text>
+            </View>
+          </View>
+          
+          <View style={styles.scoreItem}>
+            <Text style={styles.scoreItemText}>Dana</Text>
+            <View style={styles.scoreItemRight}>
+              <Text style={styles.scorePoints}>29.5 pts</Text>
+              <Text style={styles.scoreDecay}>31 → -5% decay</Text>
+            </View>
+          </View>
+        </View>
+        
+        <Text style={styles.nextRoundPrompt}>Ready for next round?</Text>
+        
+        <Pressable onPress={() => setScreen(4)}>
+          <Animated.View style={[
+            styles.nextRoundButton,
+            { transform: [{ scale: pulseAnim }] }
+          ]}>
+            <Text style={styles.nextRoundButtonText}>NEXT ROUND</Text>
+          </Animated.View>
+        </Pressable>
+        
+        <Text style={styles.autoStartTimer}>⏱️ Auto-start in: 15s</Text>
+        
+        <StatusBar style="light" />
+      </View>
+    );
+  }
+
+  if (screen === 14) {
+    return (
+      <View style={styles.gameOverScreen}>
+        <Text style={styles.gameOverHeader}>🏆 Final League Standings</Text>
+        <Text style={styles.gameOverSubtext}>Great performances, everyone! 🎭</Text>
+        
+        <View style={styles.finalScoreList}>
+          <View style={[styles.finalScoreItem, styles.finalScoreGold]}>
+            <Text style={styles.finalScoreText}>
+              <Text style={styles.medal}>🥇</Text><Text style={styles.finalScoreName}>Charlie</Text>
+            </Text>
+            <Text style={styles.finalScorePoints}>87.3 pts</Text>
+          </View>
+          
+          <View style={[styles.finalScoreItem, styles.finalScoreSilver]}>
+            <Text style={styles.finalScoreText}>
+              <Text style={styles.medal}>🥈</Text><Text style={styles.finalScoreName}>Alice</Text>
+            </Text>
+            <Text style={styles.finalScorePoints}>76.1 pts</Text>
+          </View>
+          
+          <View style={[styles.finalScoreItem, styles.finalScoreBronze]}>
+            <Text style={styles.finalScoreText}>
+              <Text style={styles.medal}>🥉</Text><Text style={styles.finalScoreName}>Bob</Text>
+            </Text>
+            <Text style={styles.finalScorePoints}>71.8 pts</Text>
+          </View>
+          
+          <View style={styles.finalScoreItem}>
+            <Text style={styles.finalScoreText}>Dana</Text>
+            <Text style={styles.finalScorePoints}>68.5 pts</Text>
+          </View>
+        </View>
+        
+        <View style={styles.leagueSystemCard}>
+          <Text style={styles.leagueSystemText}>
+            <Text style={styles.leagueSystemBold}>League System:</Text> Scores decay -5% each round, preventing runaway leads and rewarding consistent high performances!
+          </Text>
+        </View>
+        
+        <Pressable onPress={() => setScreen(4)}>
+          <View style={styles.oneMoreButton}>
+            <Text style={styles.oneMoreButtonText}>🎉 One more round!</Text>
+          </View>
+        </Pressable>
+        
+        <Pressable onPress={() => setScreen(1)}>
+          <View style={styles.exitButton}>
+            <Text style={styles.exitButtonText}>EXIT</Text>
+          </View>
+        </Pressable>
+        
+        <StatusBar style="light" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Screen {screen}</Text>
+      <StatusBar style="light" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1a0f0a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#D4A574',
+    marginBottom: 20,
+  },
+  emoji: {
+    fontSize: 80,
+    marginVertical: 30,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#C9A875',
+    textAlign: 'center',
+  },
+  gameRoom: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  helpText: {
+    fontSize: 16,
+    color: '#C9A875',
+    textAlign: 'center',
+    marginBottom: 25,
+    lineHeight: 22,
+  },
+  gameNameSection: {
+    marginVertical: 25,
+    alignItems: 'center',
+  },
+  gameLabel: {
+    fontSize: 14,
+    color: '#8B7355',
+    marginBottom: 8,
+  },
+  gameName: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#D4A574',
+  },
+  qrCode: {
+    backgroundColor: 'rgba(212, 165, 116, 0.2)',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#8B7355',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 20,
+    padding: 15,
+  },
+  qrPlaceholder: {
+    fontSize: 60,
+    color: '#D4A574',
+  },
+  qrLabel: {
+    fontSize: 13,
+    color: '#C9A875',
+    marginTop: 5,
+  },
+  nameInput: {
+    width: '100%',
+    backgroundColor: 'rgba(45, 24, 16, 0.6)',
+    borderWidth: 1,
+    borderColor: '#8B7355',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color: '#F5E6D3',
+    marginVertical: 25,
+  },
+  scanButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#8B7355',
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    marginTop: 15,
+  },
+  scanButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#C9A875',
+  },
+  lobbyHeader: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#D4A574',
+    marginBottom: 30,
+  },
+  playerList: {
+    width: '100%',
+    backgroundColor: 'rgba(212, 165, 116, 0.1)',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  },
+  playerListTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#D4A574',
+    marginBottom: 15,
+  },
+  playerItem: {
+    backgroundColor: 'rgba(45, 24, 16, 0.8)',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  playerItemYou: {
+    borderWidth: 2,
+    borderColor: '#D4A574',
+  },
+  playerName: {
+    fontSize: 16,
+    color: '#F5E6D3',
+  },
+  qrCodeSmall: {
+    backgroundColor: 'rgba(212, 165, 116, 0.2)',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#8B7355',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 15,
+    padding: 10,
+  },
+  qrPlaceholderSmall: {
+    fontSize: 48,
+    color: '#D4A574',
+  },
+  startButton: {
+    backgroundColor: '#D4A574',
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+    marginTop: 15,
+    elevation: 8,
+  },
+  startButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1a0f0a',
+  },
+  actorScreen: {
+    flex: 1,
+    backgroundColor: '#5a2d82',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  directorScreen: {
+    flex: 1,
+    backgroundColor: '#1f5a8a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  roleHeader: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 15,
+  },
+  roleSubtitle: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginBottom: 20,
+  },
+  sceneOption: {
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  sceneOptionSelected: {
+    borderColor: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  sceneTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  sceneSubtitle: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  directorOption: {
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  directorOptionSelected: {
+    borderColor: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  directorName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  confirmButton: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  confirmButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  readyScreen: {
+    flex: 1,
+    backgroundColor: '#ffecd2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  readyStartScreen: {
+    flex: 1,
+    backgroundColor: '#8b5a00',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  readyHeader: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#d35400',
+    marginBottom: 30,
+  },
+  infoCard: {
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderLeftWidth: 4,
+    borderLeftColor: '#e74c3c',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 15,
+  },
+  infoCardDark: {
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderLeftWidth: 4,
+    borderLeftColor: '#ff6b6b',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 15,
+  },
+  infoCardTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 8,
+  },
+  infoCardName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  infoCardDetail: {
+    fontSize: 15,
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginTop: 5,
+  },
+  infoCardSubDetail: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  waitingText: {
+    fontSize: 16,
+    fontStyle: 'italic',
+    color: '#333',
+    marginTop: 30,
+    opacity: 0.8,
+  },
+  startRoundButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 16,
+    paddingHorizontal: 50,
+    borderRadius: 8,
+    marginTop: 30,
+    elevation: 8,
+  },
+  startRoundButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  performanceScreen: {
+    flex: 1,
+    backgroundColor: '#d42a6a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  performanceHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 20,
+  },
+  timer: {
+    fontSize: 60,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginVertical: 20,
+  },
+  performanceCard: {
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderLeftWidth: 4,
+    borderLeftColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+  },
+  performanceCardText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  performanceEmoji: {
+    fontSize: 60,
+    marginTop: 30,
+  },
+  performanceStatus: {
+    fontSize: 18,
+    fontStyle: 'italic',
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginTop: 10,
+  },
+  actorPerformanceScreen: {
+    flex: 1,
+    backgroundColor: '#161b22',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 60,
+  },
+  actorPerformanceHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+    marginBottom: 15,
+  },
+  actorTimer: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+    marginBottom: 20,
+  },
+  scriptBox: {
+    backgroundColor: '#0d1117',
+    padding: 15,
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#ff6b6b',
+    width: '100%',
+    maxHeight: 350,
+  },
+  scriptTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+    marginBottom: 10,
+  },
+  scriptDirection: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: '#8b949e',
+    marginBottom: 10,
+  },
+  scriptLine: {
+    fontSize: 15,
+    color: '#FFFFFF',
+    lineHeight: 22,
+    marginBottom: 12,
+  },
+  directorNote: {
+    fontSize: 14,
+    color: '#7f8c8d',
+    marginTop: 15,
+  },
+  directorPerformanceScreen: {
+    flex: 1,
+    backgroundColor: '#161b22',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 60,
+  },
+  directorPerformanceHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#58a6ff',
+    marginBottom: 15,
+  },
+  directorTimer: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#58a6ff',
+    marginBottom: 20,
+  },
+  directingBox: {
+    backgroundColor: '#0d1117',
+    padding: 15,
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#58a6ff',
+    width: '100%',
+    maxHeight: 350,
+  },
+  directingTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#58a6ff',
+    marginBottom: 10,
+  },
+  directingPoint: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    lineHeight: 22,
+    marginBottom: 12,
+  },
+  actorNote: {
+    fontSize: 14,
+    color: '#7f8c8d',
+    marginTop: 15,
+  },
+  timeUpScreen: {
+    flex: 1,
+    backgroundColor: '#0d7377',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  timeUpEmoji: {
+    fontSize: 100,
+    marginBottom: 20,
+  },
+  timeUpHeader: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 20,
+  },
+  timeUpSubtext: {
+    fontSize: 22,
+    color: '#FFFFFF',
+    marginBottom: 10,
+  },
+  timeUpNote: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  ratingScreen: {
+    flex: 1,
+    backgroundColor: '#1f6feb',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 60,
+  },
+  ratingHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 20,
+  },
+  ratingInfoCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  ratingInfo: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  starsSection: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  starsPrompt: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginBottom: 10,
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  star: {
+    fontSize: 40,
+    opacity: 0.3,
+  },
+  starActive: {
+    opacity: 1,
+  },
+  tagsSection: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  tagsPrompt: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginBottom: 10,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'center',
+  },
+  tag: {
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderWidth: 2,
+    borderColor: 'transparent',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+  },
+  tagSelected: {
+    borderColor: '#FFFFFF',
+  },
+  tagText: {
+    fontSize: 14,
+    color: '#FFFFFF',
+  },
+  submitButton: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 14,
+    paddingHorizontal: 50,
+    borderRadius: 8,
+    marginTop: 20,
+    elevation: 8,
+  },
+  submitButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1f6feb',
+  },
+  leagueScreen: {
+    flex: 1,
+    backgroundColor: '#8b5a00',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 60,
+  },
+  leagueHeader: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#ffa94d',
+    marginBottom: 15,
+  },
+  thisRoundCard: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 15,
+  },
+  thisRoundLabel: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.9)',
+  },
+  thisRoundScore: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#ffa94d',
+    marginVertical: 5,
+  },
+  decayWarning: {
+    fontSize: 13,
+    color: '#ff6b6b',
+    marginTop: 5,
+  },
+  standingsLabel: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: 'rgba(255, 255, 255, 0.9)',
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+  },
+  scoreList: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    padding: 12,
+    borderRadius: 8,
+    width: '100%',
+    marginBottom: 15,
+  },
+  scoreItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 8,
+  },
+  scoreItemGold: {
+    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+  },
+  scoreItemSilver: {
+    backgroundColor: 'rgba(192, 192, 192, 0.2)',
+  },
+  scoreItemBronze: {
+    backgroundColor: 'rgba(205, 127, 50, 0.2)',
+  },
+  scoreItemText: {
+    fontSize: 15,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  medal: {
+    fontSize: 18,
+    marginRight: 6,
+  },
+  scoreItemRight: {
+    alignItems: 'flex-end',
+  },
+  scorePoints: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  scoreDecay: {
+    fontSize: 12,
+    color: '#ff6b6b',
+  },
+  scoreChange: {
+    fontSize: 12,
+  },
+  scoreGain: {
+    color: '#56d364',
+  },
+  scoreLoss: {
+    color: '#ff6b6b',
+  },
+  nextRoundPrompt: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  nextRoundButton: {
+    backgroundColor: '#4caf50',
+    paddingVertical: 14,
+    paddingHorizontal: 50,
+    borderRadius: 8,
+    elevation: 8,
+  },
+  nextRoundButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  autoStartTimer: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 12,
+  },
+  gameOverScreen: {
+    flex: 1,
+    backgroundColor: '#8b4789',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 60,
+  },
+  gameOverHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffa94d',
+    marginBottom: 10,
+  },
+  gameOverSubtext: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginBottom: 15,
+  },
+  finalScoreList: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    padding: 12,
+    borderRadius: 8,
+    width: '100%',
+    marginBottom: 15,
+  },
+  finalScoreItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 8,
+  },
+  finalScoreGold: {
+    backgroundColor: '#b8860b',
+  },
+  finalScoreSilver: {
+    backgroundColor: '#6e7681',
+  },
+  finalScoreBronze: {
+    backgroundColor: '#8b5a2b',
+  },
+  finalScoreText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
+  finalScoreName: {
+    fontWeight: 'bold',
+  },
+  finalScorePoints: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  leagueSystemCard: {
+    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+    padding: 12,
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#ff6b6b',
+    marginBottom: 15,
+  },
+  leagueSystemText: {
+    fontSize: 14,
+    color: '#FFFFFF',
+  },
+  leagueSystemBold: {
+    fontWeight: 'bold',
+  },
+  oneMoreButton: {
+    backgroundColor: '#D4A574',
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  oneMoreButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  exitButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#8B7355',
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+  },
+  exitButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#C9A875',
+  },
+});

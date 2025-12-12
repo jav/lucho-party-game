@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "app",
+    "slug": "app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "platforms": ["web", "ios", "android"],
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single",
+      "baseUrl": "/lucho-party-game/app",
+      "backgroundColor": "#1a0f0a",
+      "themeColor": "#D4A574",
+      "display": "fullscreen",
+      "orientation": "portrait",
+      "name": "Lucho Party Game",
+      "shortName": "Lucho",
+      "description": "Theatrical party game with improvised directing styles",
+      "startUrl": "/",
+      "scope": "/",
+      "lang": "en",
+      "preferRelatedApplications": false
+    }
+  }
+}

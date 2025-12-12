@@ -45,7 +45,7 @@ flowchart TD
     CreateSession --> EnterName[Enter Player Name]
     ScanQR --> EnterName
     
-    EnterName --> Lobby[Session Lobby<br/>Show QR for others to join<br/>Wait for players]
+    EnterName --> Lobby[Green Room<br/>Show QR for others to join<br/>Wait for players]
     
     Lobby --> StartGame{Host starts<br/>game?}
     StartGame -->|No| Lobby

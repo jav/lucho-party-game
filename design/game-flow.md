@@ -12,7 +12,7 @@ flowchart TD
     CreateSession --> EnterName[Enter Screen Name]
     ScanQR --> EnterName
     
-    EnterName --> Lobby[Session Lobby<br/>Show QR for others to join<br/>Wait for players]
+    EnterName --> Lobby[Green Room<br/>Show QR for others to join<br/>Wait for players]
     
     Lobby --> StartGame{Host starts<br/>game?}
     StartGame -->|No| Lobby
@@ -110,7 +110,7 @@ flowchart TD
 **Frame: Waiting Room**
 ```
 ┌─────────────────────────────────┐
-│     SESSION LOBBY               │
+│     GREEN ROOM                   │
 │                                 │
 │   Players in session:           │
 │   • Alice                       │
