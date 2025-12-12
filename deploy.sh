@@ -29,7 +29,8 @@ git merge main -m "Deploy: Sync with main $(date +'%Y-%m-%d %H:%M')"
 
 # 5. Force add the app/ directory (it's gitignored on main but needed on gh-pages)
 echo "📁 Adding built app files..."
-git add -f app/
+touch .nojekyll  # Prevent Jekyll from ignoring _expo directory
+git add -f app/ .nojekyll
 git commit -m "Deploy: Update app build $(date +'%Y-%m-%d %H:%M')" || echo "No app changes to commit"
 
 # 6. Push both branches
