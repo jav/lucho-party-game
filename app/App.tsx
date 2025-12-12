@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Pressable, TextInput, Animated, Platform } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
 
 // Add global styles for web to make it feel more app-like
 if (Platform.OS === 'web') {
@@ -50,10 +51,24 @@ if (Platform.OS === 'web') {
 export default function App() {
   const [screen, setScreen] = useState(1);
   const [playerName, setPlayerName] = useState('');
+  const [sessionId, setSessionId] = useState('ABC123'); // Generated or from URL
+  const [joinSessionId, setJoinSessionId] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(300);
   const [selectedStars, setSelectedStars] = useState(0);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Check URL parameters for deep linking (QR code scanning)
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const joinCode = urlParams.get('join');
+      if (joinCode) {
+        setJoinSessionId(joinCode);
+        setScreen(2); // Go to name entry screen
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const pulse = Animated.loop(
@@ -127,9 +142,15 @@ export default function App() {
     return (
       <Pressable style={styles.container} onPress={() => setScreen(3)}>
         <View style={styles.gameRoom}>
-          <Text style={styles.helpText}>
-            Everyone needs to be in the same game!
-          </Text>
+          {joinSessionId ? (
+            <Text style={styles.helpText}>
+              Joining session: {joinSessionId}
+            </Text>
+          ) : (
+            <Text style={styles.helpText}>
+              Everyone needs to be in the same game!
+            </Text>
+          )}
           
           <View style={styles.gameNameSection}>
             <Text style={styles.gameLabel}>Your Game:</Text>
@@ -137,7 +158,12 @@ export default function App() {
           </View>
           
           <View style={styles.qrCode}>
-            <Text style={styles.qrPlaceholder}>▦</Text>
+            <QRCode
+              value={`https://jav.github.io/lucho-party-game/?join=${sessionId}`}
+              size={120}
+              backgroundColor="transparent"
+              color="#D4A574"
+            />
             <Text style={styles.qrLabel}>Scan to join</Text>
           </View>
           
@@ -180,7 +206,13 @@ export default function App() {
         </View>
         
         <View style={styles.qrCodeSmall}>
-          <Text style={styles.qrPlaceholderSmall}>▦</Text>
+          <QRCode
+            value={`https://jav.github.io/lucho-party-game/?join=${sessionId}`}
+            size={80}
+            backgroundColor="transparent"
+            color="#D4A574"
+          />
+          <Text style={styles.qrLabel}>Share code: {sessionId}</Text>
         </View>
         
         <Pressable onPress={() => setScreen(4)}>
@@ -678,8 +710,6 @@ const styles = StyleSheet.create({
     color: '#D4A574',
   },
   qrCode: {
-    width: 140,
-    height: 140,
     backgroundColor: 'rgba(212, 165, 116, 0.2)',
     borderRadius: 12,
     borderWidth: 2,
@@ -687,6 +717,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 20,
+    padding: 15,
   },
   qrPlaceholder: {
     fontSize: 60,
@@ -757,8 +788,6 @@ const styles = StyleSheet.create({
     color: '#F5E6D3',
   },
   qrCodeSmall: {
-    width: 100,
-    height: 100,
     backgroundColor: 'rgba(212, 165, 116, 0.2)',
     borderRadius: 12,
     borderWidth: 2,
@@ -766,6 +795,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 15,
+    padding: 10,
   },
   qrPlaceholderSmall: {
     fontSize: 48,
