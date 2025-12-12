@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Pressable, TextInput, Animated, Platform } from
 import QRCode from 'react-native-qrcode-svg';
 
 // Add global styles for web to make it feel more app-like
-if (Platform.OS === 'web') {
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
   // Prevent scrolling and make it full viewport
   const style = document.createElement('style');
   style.textContent = `
@@ -76,12 +76,12 @@ export default function App() {
         Animated.timing(pulseAnim, {
           toValue: 1.08,
           duration: 800,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
           duration: 800,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }),
       ])
     );
@@ -807,10 +807,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 8,
     marginTop: 15,
-    shadowColor: '#D4A574',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 15,
     elevation: 8,
   },
   startButtonText: {
@@ -968,10 +964,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
     borderRadius: 8,
     marginTop: 30,
-    shadowColor: '#4CAF50',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 15,
     elevation: 8,
   },
   startRoundButtonText: {
@@ -1226,10 +1218,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
     borderRadius: 8,
     marginTop: 20,
-    shadowColor: '#FFFFFF',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 15,
     elevation: 8,
   },
   submitButtonText: {
@@ -1347,10 +1335,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 50,
     borderRadius: 8,
-    shadowColor: '#4caf50',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 15,
     elevation: 8,
   },
   nextRoundButtonText: {
