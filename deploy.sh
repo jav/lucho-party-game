@@ -18,6 +18,8 @@ cp -r expoFrontend/dist/* app/
 # 3. Commit on main (app is gitignored, so this just updates expoFrontend)
 echo "💾 Committing changes on main..."
 git add expoFrontend/
+# Restore gitignored app/ to avoid modification warnings
+git restore app/ 2>/dev/null || true
 git diff --quiet && git diff --staged --quiet || git commit -m "Build: Update expoFrontend $(date +'%Y-%m-%d %H:%M')"
 
 # 4. Switch to gh-pages and merge main
