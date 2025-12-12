@@ -30,11 +30,17 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (screen >= 8 && screen <= 10 && timeLeft > 0) {
+    if (screen >= 8 && screen <= 10) {
       const timer = setInterval(() => {
         setTimeLeft(prev => {
           if (prev <= 1) {
-            setScreen(11);
+            if (screen === 8) {
+              setScreen(9);
+            } else if (screen === 9) {
+              setScreen(10);
+            } else if (screen === 10) {
+              setScreen(11);
+            }
             return 0;
           }
           return prev - 1;
@@ -42,7 +48,7 @@ export default function App() {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [screen, timeLeft]);
+  }, [screen]);
 
   useEffect(() => {
     if (screen === 11) {
@@ -424,13 +430,145 @@ export default function App() {
           </View>
         </View>
         
-        <Pressable onPress={() => setScreen(1)}>
+        <Pressable onPress={() => setScreen(13)}>
           <Animated.View style={[
             styles.submitButton,
             { transform: [{ scale: pulseAnim }] }
           ]}>
             <Text style={styles.submitButtonText}>SUBMIT</Text>
           </Animated.View>
+        </Pressable>
+        
+        <StatusBar style="light" />
+      </View>
+    );
+  }
+
+  if (screen === 13) {
+    return (
+      <View style={styles.leagueScreen}>
+        <Text style={styles.leagueHeader}>🎭 Actor/Director League</Text>
+        
+        <View style={styles.thisRoundCard}>
+          <Text style={styles.thisRoundLabel}>This Round:</Text>
+          <Text style={styles.thisRoundScore}>⭐ 4.2</Text>
+          <Text style={styles.decayWarning}>⚠️ All scores decay -5% per round</Text>
+        </View>
+        
+        <Text style={styles.standingsLabel}>League Standings:</Text>
+        
+        <View style={styles.scoreList}>
+          <View style={[styles.scoreItem, styles.scoreItemGold]}>
+            <Text style={styles.scoreItemText}>
+              <Text style={styles.medal}>🥇</Text>Charlie
+            </Text>
+            <View style={styles.scoreItemRight}>
+              <Text style={styles.scorePoints}>39.9 pts</Text>
+              <Text style={styles.scoreDecay}>42 → -5% decay</Text>
+            </View>
+          </View>
+          
+          <View style={[styles.scoreItem, styles.scoreItemSilver]}>
+            <Text style={styles.scoreItemText}>
+              <Text style={styles.medal}>🥈</Text>Alice
+            </Text>
+            <View style={styles.scoreItemRight}>
+              <Text style={styles.scorePoints}>38.5 pts</Text>
+              <Text style={styles.scoreChange}>
+                <Text style={styles.scoreGain}>+4.2</Text> <Text style={styles.scoreLoss}>-5%</Text>
+              </Text>
+            </View>
+          </View>
+          
+          <View style={[styles.scoreItem, styles.scoreItemBronze]}>
+            <Text style={styles.scoreItemText}>
+              <Text style={styles.medal}>🥉</Text>Bob
+            </Text>
+            <View style={styles.scoreItemRight}>
+              <Text style={styles.scorePoints}>35.5 pts</Text>
+              <Text style={styles.scoreChange}>
+                <Text style={styles.scoreGain}>+4.2</Text> <Text style={styles.scoreLoss}>-5%</Text>
+              </Text>
+            </View>
+          </View>
+          
+          <View style={styles.scoreItem}>
+            <Text style={styles.scoreItemText}>Dana</Text>
+            <View style={styles.scoreItemRight}>
+              <Text style={styles.scorePoints}>29.5 pts</Text>
+              <Text style={styles.scoreDecay}>31 → -5% decay</Text>
+            </View>
+          </View>
+        </View>
+        
+        <Text style={styles.nextRoundPrompt}>Ready for next round?</Text>
+        
+        <Pressable onPress={() => setScreen(4)}>
+          <Animated.View style={[
+            styles.nextRoundButton,
+            { transform: [{ scale: pulseAnim }] }
+          ]}>
+            <Text style={styles.nextRoundButtonText}>NEXT ROUND</Text>
+          </Animated.View>
+        </Pressable>
+        
+        <Text style={styles.autoStartTimer}>⏱️ Auto-start in: 15s</Text>
+        
+        <StatusBar style="light" />
+      </View>
+    );
+  }
+
+  if (screen === 14) {
+    return (
+      <View style={styles.gameOverScreen}>
+        <Text style={styles.gameOverHeader}>🏆 Final League Standings</Text>
+        <Text style={styles.gameOverSubtext}>Great performances, everyone! 🎭</Text>
+        
+        <View style={styles.finalScoreList}>
+          <View style={[styles.finalScoreItem, styles.finalScoreGold]}>
+            <Text style={styles.finalScoreText}>
+              <Text style={styles.medal}>🥇</Text><Text style={styles.finalScoreName}>Charlie</Text>
+            </Text>
+            <Text style={styles.finalScorePoints}>87.3 pts</Text>
+          </View>
+          
+          <View style={[styles.finalScoreItem, styles.finalScoreSilver]}>
+            <Text style={styles.finalScoreText}>
+              <Text style={styles.medal}>🥈</Text><Text style={styles.finalScoreName}>Alice</Text>
+            </Text>
+            <Text style={styles.finalScorePoints}>76.1 pts</Text>
+          </View>
+          
+          <View style={[styles.finalScoreItem, styles.finalScoreBronze]}>
+            <Text style={styles.finalScoreText}>
+              <Text style={styles.medal}>🥉</Text><Text style={styles.finalScoreName}>Bob</Text>
+            </Text>
+            <Text style={styles.finalScorePoints}>71.8 pts</Text>
+          </View>
+          
+          <View style={styles.finalScoreItem}>
+            <Text style={styles.finalScoreText}>Dana</Text>
+            <Text style={styles.finalScorePoints}>68.5 pts</Text>
+          </View>
+        </View>
+        
+        <View style={styles.leagueSystemCard}>
+          <Text style={styles.leagueSystemText}>
+            <Text style={styles.leagueSystemBold}>League System:</Text> Scores decay -5% each round, preventing runaway leads and rewarding consistent high performances!
+          </Text>
+        </View>
+        
+        <Pressable onPress={() => setScreen(4)}>
+          <View style={styles.oneMoreButton}>
+            <Text style={styles.oneMoreButtonText}>🎉 One more round!</Text>
+          </View>
+        </Pressable>
+        
+        <Pressable onPress={() => setScreen(1)}>
+          <View style={styles.exitButton}>
+            <Text style={styles.exitButtonText}>EXIT</Text>
+          </View>
         </Pressable>
         
         <StatusBar style="light" />
@@ -1023,5 +1161,227 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#1f6feb',
+  },
+  leagueScreen: {
+    flex: 1,
+    backgroundColor: '#8b5a00',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 60,
+  },
+  leagueHeader: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#ffa94d',
+    marginBottom: 15,
+  },
+  thisRoundCard: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 15,
+  },
+  thisRoundLabel: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.9)',
+  },
+  thisRoundScore: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#ffa94d',
+    marginVertical: 5,
+  },
+  decayWarning: {
+    fontSize: 13,
+    color: '#ff6b6b',
+    marginTop: 5,
+  },
+  standingsLabel: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: 'rgba(255, 255, 255, 0.9)',
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+  },
+  scoreList: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    padding: 12,
+    borderRadius: 8,
+    width: '100%',
+    marginBottom: 15,
+  },
+  scoreItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 8,
+  },
+  scoreItemGold: {
+    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+  },
+  scoreItemSilver: {
+    backgroundColor: 'rgba(192, 192, 192, 0.2)',
+  },
+  scoreItemBronze: {
+    backgroundColor: 'rgba(205, 127, 50, 0.2)',
+  },
+  scoreItemText: {
+    fontSize: 15,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  medal: {
+    fontSize: 18,
+    marginRight: 6,
+  },
+  scoreItemRight: {
+    alignItems: 'flex-end',
+  },
+  scorePoints: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  scoreDecay: {
+    fontSize: 12,
+    color: '#ff6b6b',
+  },
+  scoreChange: {
+    fontSize: 12,
+  },
+  scoreGain: {
+    color: '#56d364',
+  },
+  scoreLoss: {
+    color: '#ff6b6b',
+  },
+  nextRoundPrompt: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  nextRoundButton: {
+    backgroundColor: '#4caf50',
+    paddingVertical: 14,
+    paddingHorizontal: 50,
+    borderRadius: 8,
+    shadowColor: '#4caf50',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 15,
+    elevation: 8,
+  },
+  nextRoundButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  autoStartTimer: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: 12,
+  },
+  gameOverScreen: {
+    flex: 1,
+    backgroundColor: '#8b4789',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 60,
+  },
+  gameOverHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffa94d',
+    marginBottom: 10,
+  },
+  gameOverSubtext: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.9)',
+    marginBottom: 15,
+  },
+  finalScoreList: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    padding: 12,
+    borderRadius: 8,
+    width: '100%',
+    marginBottom: 15,
+  },
+  finalScoreItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 8,
+  },
+  finalScoreGold: {
+    backgroundColor: '#b8860b',
+  },
+  finalScoreSilver: {
+    backgroundColor: '#6e7681',
+  },
+  finalScoreBronze: {
+    backgroundColor: '#8b5a2b',
+  },
+  finalScoreText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
+  finalScoreName: {
+    fontWeight: 'bold',
+  },
+  finalScorePoints: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  leagueSystemCard: {
+    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+    padding: 12,
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#ff6b6b',
+    marginBottom: 15,
+  },
+  leagueSystemText: {
+    fontSize: 14,
+    color: '#FFFFFF',
+  },
+  leagueSystemBold: {
+    fontWeight: 'bold',
+  },
+  oneMoreButton: {
+    backgroundColor: '#D4A574',
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  oneMoreButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  exitButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#8B7355',
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+  },
+  exitButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#C9A875',
   },
 });
